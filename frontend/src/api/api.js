@@ -20,3 +20,15 @@ export async function fetchDashboardMetrics() {
     if (!res.ok) throw new Error("Failed to fetch dashboard metrics");
     return res.json();
 }
+
+export async function startInvestigation(id) {
+    const res = await fetch(`${API_BASE}/disputes/${id}/investigate-async`, { method: 'POST' });
+    if (!res.ok) throw new Error("Failed to start investigation");
+    return res.json();
+}
+
+export async function pollInvestigation(sessionId) {
+    const res = await fetch(`${API_BASE}/investigations/${sessionId}`);
+    if (!res.ok) throw new Error("Failed to poll investigation");
+    return res.json();
+}
