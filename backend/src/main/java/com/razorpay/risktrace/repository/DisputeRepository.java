@@ -15,4 +15,18 @@ public interface DisputeRepository extends JpaRepository<Dispute, UUID>, org.spr
 
     @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(d.amount), 0) FROM Dispute d")
     java.math.BigDecimal sumTotalDisputedAmount();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(SUM(d.amount), 0) FROM Dispute d WHERE d.status NOT IN ('WON', 'LOST')")
+    java.math.BigDecimal sumMoneyAtRisk();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(d) FROM Dispute d WHERE d.priorityLevel = 'HIGH'")
+    long countHighPriority();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COUNT(d) FROM Dispute d WHERE d.urgencyLevel = 'HIGH'")
+    long countUrgent();
+
+    @org.springframework.data.jpa.repository.Query("SELECT COALESCE(AVG(d.strength), 0) FROM Dispute d")
+    Double getAverageStrength();
+
+    java.util.List<Dispute> findTop5ByOrderByCreatedAtDesc();
 }
