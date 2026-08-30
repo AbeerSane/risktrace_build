@@ -22,8 +22,10 @@ public class Dispute {
     @Enumerated(EnumType.STRING) private DisputeStatus status;
     @Enumerated(EnumType.STRING) private DisputeDecision decision;
     
-    private Integer priority;
-    private Integer urgency;
+    private Integer priorityScore;
+    private String priorityLevel;
+    private String urgencyLevel;
+    private BigDecimal potentialRecovery;
     private Integer completeness;
     private Integer strength;
     
@@ -52,10 +54,14 @@ public class Dispute {
     public void setStatus(DisputeStatus status) { this.status = status; }
     public DisputeDecision getDecision() { return decision; }
     public void setDecision(DisputeDecision decision) { this.decision = decision; }
-    public Integer getPriority() { return priority; }
-    public void setPriority(Integer priority) { this.priority = priority; }
-    public Integer getUrgency() { return urgency; }
-    public void setUrgency(Integer urgency) { this. urgency = urgency; }
+    public Integer getPriorityScore() { return priorityScore; }
+    public void setPriorityScore(Integer priorityScore) { this.priorityScore = priorityScore; }
+    public String getPriorityLevel() { return priorityLevel; }
+    public void setPriorityLevel(String priorityLevel) { this.priorityLevel = priorityLevel; }
+    public String getUrgencyLevel() { return urgencyLevel; }
+    public void setUrgencyLevel(String urgencyLevel) { this.urgencyLevel = urgencyLevel; }
+    public BigDecimal getPotentialRecovery() { return potentialRecovery; }
+    public void setPotentialRecovery(BigDecimal potentialRecovery) { this.potentialRecovery = potentialRecovery; }
     public Integer getCompleteness() { return completeness; }
     public void setCompleteness(Integer completeness) { this.completeness = completeness; }
     public Integer getStrength() { return strength; }

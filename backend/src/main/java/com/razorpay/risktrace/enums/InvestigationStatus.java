@@ -1,0 +1,13 @@
+package com.razorpay.risktrace.enums;
+
+public enum InvestigationStatus {
+    INITIALIZING,
+    RECONSTRUCTING_TRANSACTION,
+    GATHERING_EVIDENCE,
+    ANALYZING_EVIDENCE,
+    DETECTING_CONTRADICTIONS,
+    ASSESSING_CASE,
+    AI_REASONING,
+    COMPLETE,
+    FAILED
+}

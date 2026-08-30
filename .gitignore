@@ -27,3 +27,6 @@ frontend/*.local
 .env
 .env.*
 !.env.example
+
+# Private Configuration
+backend/src/main/resources/application.properties
