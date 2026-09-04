@@ -79,7 +79,7 @@ export default function Landing() {
                     {/* Hero Text */}
                     <motion.div style={{ position: 'absolute', top: '15%', textAlign: 'center', opacity: useTransform(scrollYProgress, [0, 0.15], [1, 0]), y: shouldReduceMotion ? 0 : useTransform(scrollYProgress, [0, 0.15], [0, -50]), willChange: 'opacity, transform' }}>
                         <h1 style={{ fontSize: '6rem', fontWeight: 200, letterSpacing: '8px', margin: 0, textShadow: '0 0 40px rgba(255,255,255,0.2)' }}>FOLLOW THE MONEY.</h1>
-                        <p style={{ color: '#a55eea', fontSize: '1.5rem', letterSpacing: '4px', marginTop: '1rem', fontWeight: 300 }}>Every payment leaves evidence.</p>
+                        <p style={{ color: '#a55eea', fontSize: '1.25rem', letterSpacing: '4px', marginTop: '1rem', fontWeight: 300 }}>Every payment leaves evidence.</p>
                     </motion.div>
 
                     {/* Central Transaction Node */}
@@ -110,7 +110,7 @@ export default function Landing() {
                         </div>
 
                         <motion.div style={{ position: 'absolute', top: '25%', left: '50%', transform: 'translate(-50%, 0)', textAlign: 'center' }}>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 300, letterSpacing: '4px', margin: 0 }}>PAYMENT DECONSTRUCTED</h2>
+                            <h2 style={{ fontSize: '2.5rem', fontWeight: 200, letterSpacing: '6px', margin: 0 }}>PAYMENT DECONSTRUCTED</h2>
                         </motion.div>
                     </motion.div>
 
@@ -136,19 +136,20 @@ export default function Landing() {
                         </div>
 
                         <motion.div style={{ position: 'absolute', top: '25%', left: '50%', transform: 'translate(-50%, 0)', textAlign: 'center' }}>
-                            <h2 style={{ fontSize: '2rem', fontWeight: 300, letterSpacing: '4px', margin: 0, color: '#e74c3c' }}>ANOMALY DETECTED</h2>
+                            <h2 style={{ fontSize: '2.5rem', fontWeight: 200, letterSpacing: '6px', margin: 0, color: '#e74c3c' }}>ANOMALY DETECTED</h2>
                         </motion.div>
                     </motion.div>
 
                     {/* AI Investigation (Stage 3) */}
                     <motion.div style={{ position: 'absolute', width: '100%', height: '100%', opacity: aiOpacity, zIndex: 17, willChange: 'opacity' }}>
-                        <div style={{ position: 'absolute', left: '20%', top: '50%', transform: 'translateY(-50%)', width: '300px', background: 'rgba(20, 18, 25, 0.9)', padding: '2rem', border: '1px solid #2ecc71', borderRadius: '8px', boxShadow: '0 0 30px rgba(46, 204, 113, 0.1)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#2ecc71', marginBottom: '1rem' }}><Zap size={18}/> <span>AI REASONING ENGINE</span></div>
-                            <div style={{ color: '#ccc', fontSize: '0.9rem', lineHeight: '1.8' }}>
-                                {'>'} Scanning transaction vectors...<br/>
-                                {'>'} Device fingerprint mismatch detected.<br/>
-                                {'>'} Billing address lacks correlation with shipping history.<br/>
-                                {'>'} <span style={{ color: '#e74c3c' }}>High probability of Account Takeover (ATO).</span>
+                        <div style={{ position: 'absolute', left: '20%', top: '50%', transform: 'translateY(-50%)', width: '320px', background: 'rgba(20, 18, 25, 0.9)', padding: '1.75rem', border: '1px solid #2ecc71', borderRadius: '8px', boxShadow: '0 0 30px rgba(46, 204, 113, 0.1)' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#2ecc71', marginBottom: '1rem', letterSpacing: '2px', fontWeight: 600, fontSize: '0.85rem' }}>
+                                <Zap size={18}/> <span>AI REASONING</span>
+                            </div>
+                            <div style={{ color: '#ccc', fontSize: '0.85rem', lineHeight: '1.8', letterSpacing: '1px', fontFamily: 'monospace' }}>
+                                {'>'} DEVICE MISMATCH<br/>
+                                {'>'} UNVERIFIED ROUTE<br/>
+                                {'>'} <span style={{ color: '#e74c3c' }}>HIGH RISK ATO PATTERN</span>
                             </div>
                         </div>
                     </motion.div>
@@ -157,8 +158,8 @@ export default function Landing() {
                     <motion.div style={{ position: 'absolute', width: '100%', height: '100%', opacity: decisionOpacity, scale: decisionScale, zIndex: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', pointerEvents: 'auto', willChange: 'opacity, transform' }}>
                         <div style={{ textAlign: 'center', background: 'linear-gradient(135deg, rgba(20, 18, 25, 0.9) 0%, rgba(10, 10, 12, 0.95) 100%)', padding: '4rem', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 30px 60px rgba(0,0,0,0.5)' }}>
                             <ShieldAlert size={48} color="#f39c12" style={{ margin: '0 auto 1.5rem auto' }} />
-                            <h2 style={{ fontSize: '3rem', fontWeight: 200, letterSpacing: '6px', margin: '0 0 1rem 0' }}>WE TURN EVIDENCE INTO ACTION.</h2>
-                            <p style={{ color: '#747d8c', fontSize: '1.2rem', marginBottom: '3rem' }}>Stop fraud. Resolve disputes. Automate intelligence.</p>
+                            <h2 style={{ fontSize: '3.5rem', fontWeight: 200, letterSpacing: '8px', margin: '0 0 1rem 0' }}>EVIDENCE → ACTION</h2>
+                            <p style={{ color: '#747d8c', fontSize: '1.1rem', marginBottom: '3rem', letterSpacing: '3px', fontWeight: 300 }}>Automated dispute intelligence.</p>
                             
                             <button 
                                 onClick={() => navigate('/login')}

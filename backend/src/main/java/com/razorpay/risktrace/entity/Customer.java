@@ -1,4 +1,5 @@
 package com.razorpay.risktrace.entity;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,6 +11,7 @@ public class Customer {
     private String name;
     private String email;
     private String phone;
+    private int riskScore;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -24,6 +26,8 @@ public class Customer {
     public void setEmail(String email) { this.email = email; }
     public String getPhone() { return phone; }
     public void setPhone(String phone) { this.phone = phone; }
+    public int getRiskScore() { return riskScore; }
+    public void setRiskScore(int riskScore) { this.riskScore = riskScore; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
 }

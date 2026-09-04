@@ -1,5 +1,5 @@
 package com.razorpay.risktrace.enums;
 
 public enum PaymentStatus {
-    SUCCESS, FAILED, REFUNDED, DISPUTED
+    SUCCESS, FAILED, REFUNDED, DISPUTED, CAPTURED
 }

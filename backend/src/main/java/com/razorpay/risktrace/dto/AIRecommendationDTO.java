@@ -11,4 +11,13 @@ public record AIRecommendationDTO(
     List<String> contradictions,
     List<String> risks,
     String recommendedNextStep
-) {}
+) {
+    /**
+     * Compatibility method expected by AiInvestigationService.
+     * Returns the recommended next step for the merchant.
+     */
+    public String recommendationAction() {
+        return recommendedNextStep();
+    }
+}
+

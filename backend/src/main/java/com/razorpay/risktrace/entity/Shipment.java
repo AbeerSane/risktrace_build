@@ -18,6 +18,8 @@ public class Shipment {
     
     private LocalDateTime estimatedDelivery;
     private LocalDateTime actualDelivery;
+
+    private String shippingAddress;
     
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -41,4 +43,7 @@ public class Shipment {
     public void setActualDelivery(LocalDateTime actualDelivery) { this.actualDelivery = actualDelivery; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public void setShippingAddress(String shippingAddress) { this.shippingAddress = shippingAddress; }
+    public String getShippingAddress() { return shippingAddress; }
 }

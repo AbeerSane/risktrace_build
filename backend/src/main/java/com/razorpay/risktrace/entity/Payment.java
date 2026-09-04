@@ -22,6 +22,12 @@ public class Payment {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
+    private String paymentMethod;
+    private String cardNetwork;
+    private String ipAddress;
+    private boolean cvvMatched;
+    private boolean authenticated3ds;
+
     @PrePersist protected void onCreate() { createdAt = LocalDateTime.now(); updatedAt = createdAt; }
     @PreUpdate protected void onUpdate() { updatedAt = LocalDateTime.now(); }
 
@@ -41,4 +47,10 @@ public class Payment {
     public void setPaymentDate(LocalDateTime paymentDate) { this.paymentDate = paymentDate; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
+
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
+    public void setCardNetwork(String cardNetwork) { this.cardNetwork = cardNetwork; }
+    public void setIpAddress(String ipAddress) { this.ipAddress = ipAddress; }
+    public void setCvvMatched(boolean cvvMatched) { this.cvvMatched = cvvMatched; }
+    public void setAuthenticated3ds(boolean authenticated3ds) { this.authenticated3ds = authenticated3ds; }
 }
