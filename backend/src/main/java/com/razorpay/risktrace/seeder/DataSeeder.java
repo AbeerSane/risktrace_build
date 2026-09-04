@@ -28,6 +28,7 @@ public class DataSeeder implements CommandLineRunner {
     private final DisputeRepository disputeRepository;
     private final EvidenceRepository evidenceRepository;
     private final AuditEventRepository auditEventRepository;
+    private final InvestigationSessionRepository investigationSessionRepository;
     private final CaseAssessmentService caseAssessmentService;
 
     @Value("${risktrace.seed.enabled:false}")
@@ -39,6 +40,7 @@ public class DataSeeder implements CommandLineRunner {
                       OrderRecordRepository orderRepository, PaymentRepository paymentRepository,
                       ShipmentRepository shipmentRepository, DisputeRepository disputeRepository,
                       EvidenceRepository evidenceRepository, AuditEventRepository auditEventRepository,
+                      InvestigationSessionRepository investigationSessionRepository,
                       CaseAssessmentService caseAssessmentService) {
         this.merchantRepository = merchantRepository;
         this.customerRepository = customerRepository;
@@ -48,6 +50,7 @@ public class DataSeeder implements CommandLineRunner {
         this.disputeRepository = disputeRepository;
         this.evidenceRepository = evidenceRepository;
         this.auditEventRepository = auditEventRepository;
+        this.investigationSessionRepository = investigationSessionRepository;
         this.caseAssessmentService = caseAssessmentService;
     }
 
@@ -85,6 +88,7 @@ public class DataSeeder implements CommandLineRunner {
     private void clearData() {
         logger.info("Clearing existing data...");
         evidenceRepository.deleteAllInBatch();
+        investigationSessionRepository.deleteAllInBatch();
         auditEventRepository.deleteAllInBatch();
         disputeRepository.deleteAllInBatch();
         shipmentRepository.deleteAllInBatch();
