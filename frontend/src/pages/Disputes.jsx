@@ -51,9 +51,21 @@ export default function Disputes() {
     return (
         <div style={{ fontFamily: 'system-ui, sans-serif' }}>
             <header style={{ marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '1rem' }}>
-                <div>
-                    <h1 style={{ fontSize: '2rem', fontWeight: 300, margin: 0, letterSpacing: '1px', color: '#f1f2f6' }}>Disputes Engine</h1>
-                    <p style={{ color: '#747d8c', marginTop: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem' }}>Active Case Management</p>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
+                    <div>
+                        <h1 style={{ fontSize: '2rem', fontWeight: 300, margin: 0, letterSpacing: '1px', color: '#f1f2f6' }}>Disputes Engine</h1>
+                        <p style={{ color: '#747d8c', marginTop: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem' }}>{disputes.length} Active Cases</p>
+                    </div>
+                    <button 
+                        onClick={() => navigate('/disputes/new')}
+                        style={{
+                            background: '#a55eea', color: 'white', border: 'none', borderRadius: '6px',
+                            padding: '10px 20px', fontWeight: 'bold', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', gap: '0.5rem'
+                        }}
+                    >
+                        + NEW CASE
+                    </button>
                 </div>
             </header>
 

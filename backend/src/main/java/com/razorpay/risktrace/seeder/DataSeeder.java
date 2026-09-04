@@ -241,12 +241,28 @@ public class DataSeeder implements CommandLineRunner {
                 d = disputeRepository.save(d);
                 createEvidence(d, EvidenceType.RECEIPT, "Invoice for high-value consulting", EvidenceStatus.SUPPORTING);
             } else if (i >= 5 && i <= 9) {
-                // 6. Systemic Pattern (Multiple disputes with same characteristics)
+                // 6. Pattern A: Fraud Ring (Same Device Fingerprint)
                 d.setReason("Fraudulent transaction");
-                d.setCompleteness(50);
+                d.setAmount(BigDecimal.valueOf(8000 + random.nextInt(2000))); // High value
+                d.setCompleteness(85);
                 d.setStrength(30);
                 d = disputeRepository.save(d);
-                createEvidence(d, EvidenceType.LOG_DATA, "Same device IP used for 5 different fraudulent claims: 192.168.1.100", EvidenceStatus.SUPPORTING);
+                createEvidence(d, EvidenceType.LOG_DATA, "Device Fingerprint: FINGERPRINT-A98B7. IP: 192.168.1.100", EvidenceStatus.SUPPORTING);
+                createEvidence(d, EvidenceType.CUSTOMER_COMMUNICATION, "Customer denies making purchase", EvidenceStatus.SUPPORTING);
+            } else if (i >= 10 && i <= 15) {
+                // 7. Pattern B: Fulfillment Anomaly (Same Carrier, Product not delivered)
+                d.setReason("Product not delivered");
+                d.setCompleteness(60);
+                d.setStrength(20);
+                
+                // Force carrier to BlueDart for this cluster
+                if (shipment != null) {
+                    shipment.setCarrier("BlueDart");
+                    shipmentRepository.save(shipment);
+                }
+
+                d = disputeRepository.save(d);
+                createEvidence(d, EvidenceType.TRACKING_NUMBER, "Carrier: BlueDart. Status: Lost in transit.", EvidenceStatus.SUPPORTING);
             } else {
                 // Generic cases for the rest
                 d.setReason("Unrecognized charge");

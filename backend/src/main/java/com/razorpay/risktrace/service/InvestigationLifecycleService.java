@@ -30,6 +30,7 @@ public class InvestigationLifecycleService {
     private final CaseAssessmentService caseAssessmentService;
     private final AiInvestigationService aiInvestigationService;
     private final ObjectMapper objectMapper;
+    private final AuditService auditService;
 
     public InvestigationLifecycleService(
             InvestigationSessionRepository sessionRepository,
@@ -38,7 +39,8 @@ public class InvestigationLifecycleService {
             InvestigationEngineService investigationEngineService,
             CaseAssessmentService caseAssessmentService,
             AiInvestigationService aiInvestigationService,
-            ObjectMapper objectMapper) {
+            ObjectMapper objectMapper,
+            AuditService auditService) {
         this.sessionRepository = sessionRepository;
         this.disputeRepository = disputeRepository;
         this.disputeService = disputeService;
@@ -46,6 +48,7 @@ public class InvestigationLifecycleService {
         this.caseAssessmentService = caseAssessmentService;
         this.aiInvestigationService = aiInvestigationService;
         this.objectMapper = objectMapper;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -57,6 +60,8 @@ public class InvestigationLifecycleService {
         session.setDispute(dispute);
         session.setStatus(InvestigationStatus.INITIALIZING);
         session = sessionRepository.save(session);
+        
+        auditService.logEvent(dispute, "INVESTIGATION_STARTED", "System", "Automated investigation initiated.");
 
         return mapToDTO(session);
     }
@@ -115,13 +120,14 @@ public class InvestigationLifecycleService {
         session.setStatus(InvestigationStatus.COMPLETE);
         try {
             String payload = objectMapper.writeValueAsString(
-                    java.util.Map.of("casePackage", casePackage, "aiRecommendation", aiRecommendation != null ? aiRecommendation : "failed")
+                    java.util.Map.of("casePackage", casePackage, "aiRecommendation", aiRecommendation != null ? aiRecommendation : java.util.Map.of("status", "FAILED", "reason", "AI Unavailable"))
             );
             session.setResultPayload(payload);
         } catch (Exception e) {
             session.setErrorReason("Failed to serialize result payload");
         }
         sessionRepository.save(session);
+        auditService.logEvent(session.getDispute(), "INVESTIGATION_COMPLETED", "System", "Automated investigation phases complete. Awaiting merchant decision.");
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

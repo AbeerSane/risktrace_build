@@ -22,15 +22,18 @@ public class DecisionWorkflowService {
     private final AuditEventRepository auditEventRepository;
     private final CaseAssessmentService caseAssessmentService;
     private final ObjectMapper objectMapper;
+    private final AuditService auditService;
 
     public DecisionWorkflowService(DisputeRepository disputeRepository,
                                    AuditEventRepository auditEventRepository,
                                    CaseAssessmentService caseAssessmentService,
-                                   ObjectMapper objectMapper) {
+                                   ObjectMapper objectMapper,
+                                   AuditService auditService) {
         this.disputeRepository = disputeRepository;
         this.auditEventRepository = auditEventRepository;
         this.caseAssessmentService = caseAssessmentService;
         this.objectMapper = objectMapper;
+        this.auditService = auditService;
     }
 
     @Transactional
@@ -59,22 +62,15 @@ public class DecisionWorkflowService {
         CaseAssessmentDTO assessment = caseAssessmentService.assessCase(disputeId);
 
         // 4. Record Audit Event
-        AuditEvent audit = new AuditEvent();
-        audit.setDispute(dispute);
-        audit.setAction("MERCHANT_DECISION_SUBMITTED");
-        audit.setPerformedBy("MERCHANT_SYSTEM");
-
         try {
             String detailsJson = objectMapper.writeValueAsString(Map.of(
                     "merchantDecision", request.decision().name(),
                     "aiRecommendation", request.aiRecommendation() != null ? request.aiRecommendation() : "No AI Recommendation Provided",
                     "caseAssessment", assessment
             ));
-            audit.setDetails(detailsJson);
+            auditService.logEvent(dispute, "MERCHANT_DECISION", "Merchant", detailsJson);
         } catch (Exception e) {
-            audit.setDetails("{\"error\": \"Failed to serialize audit details\"}");
+            auditService.logEvent(dispute, "MERCHANT_DECISION", "Merchant", "Decision: " + request.decision().name());
         }
-
-        auditEventRepository.save(audit);
     }
 }

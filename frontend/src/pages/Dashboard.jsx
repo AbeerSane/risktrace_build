@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { fetchDashboardMetrics } from "../api/api";
 import { useAuth } from "../context/AuthContext";
+import { Zap, ChevronRight, AlertTriangle } from "lucide-react";
 
 export default function Dashboard() {
+    const navigate = useNavigate();
     const { user } = useAuth();
     const [metrics, setMetrics] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -53,18 +55,51 @@ export default function Dashboard() {
                 </p>
             </header>
 
-            {/* Hero Metric */}
-            <div style={{ 
-                background: 'linear-gradient(135deg, rgba(20, 18, 25, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%)',
-                border: '1px solid rgba(170, 59, 255, 0.2)',
-                borderRadius: '12px', padding: '3rem 2rem', marginBottom: '2rem',
-                boxShadow: '0 10px 30px -10px rgba(170, 59, 255, 0.1)',
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
-            }}>
-                <span style={{ color: '#a55eea', textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.9rem', marginBottom: '1rem', fontWeight: 600 }}>Total Money At Risk</span>
-                <span style={{ fontSize: '5rem', fontWeight: 200, color: '#f1f2f6', letterSpacing: '-2px', textShadow: '0 0 20px rgba(255, 255, 255, 0.1)' }}>
-                    {formatter.format(metrics.moneyAtRisk)}
-                </span>
+            {/* Hero Metric & Demo Shortcut */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+                <div style={{ 
+                    background: 'linear-gradient(135deg, rgba(20, 18, 25, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%)',
+                    border: '1px solid rgba(170, 59, 255, 0.2)',
+                    borderRadius: '12px', padding: '3rem 2rem',
+                    boxShadow: '0 10px 30px -10px rgba(170, 59, 255, 0.1)',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
+                }}>
+                    <span style={{ color: '#a55eea', textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.9rem', marginBottom: '1rem', fontWeight: 600 }}>Total Money At Risk</span>
+                    <span style={{ fontSize: '4rem', fontWeight: 200, color: '#f1f2f6', letterSpacing: '-2px', textShadow: '0 0 20px rgba(255, 255, 255, 0.1)' }}>
+                        {formatter.format(metrics.moneyAtRisk)}
+                    </span>
+                </div>
+
+                <div style={{ 
+                    background: 'linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(20, 18, 25, 0.9) 100%)',
+                    border: '1px solid rgba(231, 76, 60, 0.3)',
+                    borderRadius: '12px', padding: '2rem',
+                    boxShadow: '0 10px 30px -10px rgba(231, 76, 60, 0.2)',
+                    display: 'flex', flexDirection: 'column', justifyContent: 'center'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#e74c3c', marginBottom: '1rem' }}>
+                        <AlertTriangle size={20} />
+                        <span style={{ textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', fontWeight: 600 }}>High Priority Demo</span>
+                    </div>
+                    <h2 style={{ fontSize: '1.8rem', fontWeight: 300, margin: '0 0 1rem 0', color: '#f1f2f6' }}>Contradictory Evidence Detected</h2>
+                    <p style={{ color: '#ccc', marginBottom: '2rem', lineHeight: '1.5' }}>
+                        A seeded case involving 'Item defective' claims contains conflicting evidence. Ideal for demonstrating AI reasoning capabilities.
+                    </p>
+                    <button 
+                        onClick={() => {
+                            const target = metrics.recentDisputes?.find(d => d.reason === "Item defective") || metrics.recentDisputes?.[0];
+                            if (target) navigate(`/disputes/${target.id}`);
+                        }}
+                        style={{
+                            background: '#e74c3c', color: '#fff', border: 'none', padding: '1rem 2rem',
+                            fontSize: '1rem', fontWeight: 600, letterSpacing: '1px', borderRadius: '8px', cursor: 'pointer',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
+                            boxShadow: '0 5px 15px rgba(231, 76, 60, 0.4)', transition: 'all 0.2s', width: 'fit-content'
+                        }}
+                    >
+                        <Zap size={18} /> LAUNCH LIVE DEMO <ChevronRight size={18} />
+                    </button>
+                </div>
             </div>
 
             {/* Grid Metrics */}

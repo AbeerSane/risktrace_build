@@ -24,10 +24,12 @@ public class DisputeService {
 
     private final DisputeRepository disputeRepository;
     private final ShipmentRepository shipmentRepository;
+    private final com.razorpay.risktrace.repository.AuditEventRepository auditEventRepository;
 
-    public DisputeService(DisputeRepository disputeRepository, ShipmentRepository shipmentRepository) {
+    public DisputeService(DisputeRepository disputeRepository, ShipmentRepository shipmentRepository, com.razorpay.risktrace.repository.AuditEventRepository auditEventRepository) {
         this.disputeRepository = disputeRepository;
         this.shipmentRepository = shipmentRepository;
+        this.auditEventRepository = auditEventRepository;
     }
 
     public Page<DisputeSummaryDTO> getDisputes(DisputeStatus status, String reason, String priorityLevel, String urgencyLevel, Pageable pageable) {
@@ -57,6 +59,13 @@ public class DisputeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Dispute not found with id: " + id));
 
         return mapToDetailsDTO(dispute);
+    }
+
+    public List<AuditEventDTO> getAuditEvents(UUID id) {
+        return auditEventRepository.findByDisputeIdOrderByTimestampDesc(id)
+            .stream()
+            .map(a -> new AuditEventDTO(a.getId(), a.getAction(), a.getPerformedBy(), a.getDetails(), a.getTimestamp()))
+            .collect(Collectors.toList());
     }
 
     private DisputeSummaryDTO mapToSummaryDTO(Dispute d) {

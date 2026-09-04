@@ -27,6 +27,8 @@ public class AiInvestigationService {
     private final CaseAssessmentService caseAssessmentService;
     private final ObjectMapper objectMapper;
     private final HttpClient httpClient;
+    private final AuditService auditService;
+    private final com.razorpay.risktrace.repository.DisputeRepository disputeRepository;
 
     @Value("${risktrace.ai.api-url:https://api.openai.com/v1/chat/completions}")
     private String apiUrl;
@@ -61,11 +63,15 @@ public class AiInvestigationService {
     public AiInvestigationService(DisputeService disputeService,
                                   InvestigationEngineService investigationEngineService,
                                   CaseAssessmentService caseAssessmentService,
-                                  ObjectMapper objectMapper) {
+                                  ObjectMapper objectMapper,
+                                  AuditService auditService,
+                                  com.razorpay.risktrace.repository.DisputeRepository disputeRepository) {
         this.disputeService = disputeService;
         this.investigationEngineService = investigationEngineService;
         this.caseAssessmentService = caseAssessmentService;
         this.objectMapper = objectMapper;
+        this.auditService = auditService;
+        this.disputeRepository = disputeRepository;
         this.httpClient = HttpClient.newBuilder()
                 .connectTimeout(Duration.ofSeconds(10))
                 .build();
@@ -120,7 +126,13 @@ public class AiInvestigationService {
             String aiJsonOutput = messageNode.asText();
 
             // 5. Validate and Deserialize Server-Side
-            return objectMapper.readValue(aiJsonOutput, AIRecommendationDTO.class);
+            AIRecommendationDTO recommendation = objectMapper.readValue(aiJsonOutput, AIRecommendationDTO.class);
+            
+            disputeRepository.findById(disputeId).ifPresent(dispute -> {
+                auditService.logEvent(dispute, "AI_RECOMMENDATION", "AI System", "AI has completed its reasoning and provided a recommendation: " + recommendation.recommendationAction());
+            });
+            
+            return recommendation;
 
         } catch (java.net.http.HttpTimeoutException e) {
             logger.error("AI Provider timed out.", e);

@@ -4,6 +4,7 @@ import { fetchDisputeDetails, startInvestigation, pollInvestigation } from "../a
 import InvestigationSequence from "../components/InvestigationSequence";
 import FinalWorkspace from "../components/FinalWorkspace";
 import { PlayCircle, ArrowLeft } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function DisputeDetail() {
     const { id } = useParams();
@@ -76,13 +77,35 @@ export default function DisputeDetail() {
         );
     }
 
+    const handleReassess = async () => {
+        try {
+            const session = await startInvestigation(id);
+            setSessionId(session.id);
+            // We do NOT set viewState to 'ANIMATING'. We let FinalWorkspace handle its own re-animation
+            // But we must poll to get the new payload.
+            setBackendStatus(session.status);
+            
+            const pollInterval = setInterval(async () => {
+                const sessionData = await pollInvestigation(session.id);
+                if (sessionData.status === 'COMPLETE' || sessionData.status === 'FAILED') {
+                    if (sessionData.resultPayload) {
+                        setPayload(JSON.parse(sessionData.resultPayload));
+                    }
+                    clearInterval(pollInterval);
+                }
+            }, 500);
+        } catch (err) {
+            console.error("Failed to reassess", err);
+        }
+    };
+
     if (viewState === 'WORKSPACE') {
         return (
             <div>
                 <button onClick={() => navigate('/disputes')} style={{ background: 'transparent', border: 'none', color: '#747d8c', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', padding: '1rem 2rem' }}>
                     <ArrowLeft size={16} /> Back to Command Center
                 </button>
-                <FinalWorkspace dispute={dispute} payload={payload} />
+                <FinalWorkspace dispute={dispute} payload={payload} onReassess={handleReassess} />
             </div>
         );
     }
@@ -105,20 +128,28 @@ export default function DisputeDetail() {
                 <p style={{ color: '#747d8c', marginBottom: '2rem', maxWidth: '400px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
                     Initiate the autonomous AI engine to reconstruct the transaction graph, gather related evidence, and detect contradictions.
                 </p>
-                <button 
+                <motion.button 
                     onClick={handleInitiate}
+                    animate={{ 
+                        scale: [1, 1.03, 1], 
+                        boxShadow: [
+                            '0 4px 15px rgba(170, 59, 255, 0.4)', 
+                            '0 4px 30px rgba(255, 255, 255, 0.5)', 
+                            '0 4px 15px rgba(170, 59, 255, 0.4)'
+                        ] 
+                    }}
+                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
                     style={{ 
                         background: 'linear-gradient(90deg, #a55eea, #7b2cbf)', 
-                        border: 'none', borderRadius: '30px', 
-                        padding: '1rem 2.5rem', color: 'white', 
-                        fontSize: '1.1rem', cursor: 'pointer',
-                        display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                        boxShadow: '0 4px 15px rgba(170, 59, 255, 0.4)',
-                        textTransform: 'uppercase', letterSpacing: '1px', fontWeight: 600
+                        border: '1px solid rgba(255, 255, 255, 0.5)', borderRadius: '30px', 
+                        padding: '1.2rem 3rem', color: 'white', 
+                        fontSize: '1.2rem', cursor: 'pointer',
+                        display: 'inline-flex', alignItems: 'center', gap: '0.8rem',
+                        textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700
                     }}
                 >
-                    <PlayCircle size={20} /> Initialize Investigation
-                </button>
+                    <PlayCircle size={24} /> Initialize Investigation
+                </motion.button>
             </div>
         </div>
     );

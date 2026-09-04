@@ -24,4 +24,17 @@ public class EvidenceController {
             @RequestBody EvidenceDTO request) {
         return ResponseEntity.ok(evidenceService.addEvidence(disputeId, request));
     }
+    @PostMapping("/upload")
+    public ResponseEntity<EvidenceDTO> uploadEvidence(
+            @PathVariable UUID disputeId,
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        return ResponseEntity.ok(evidenceService.uploadEvidence(disputeId, file));
+    }
+
+    @PostMapping("/{evidenceId}/accept")
+    public ResponseEntity<EvidenceDTO> acceptEvidence(
+            @PathVariable UUID disputeId,
+            @PathVariable UUID evidenceId) {
+        return ResponseEntity.ok(evidenceService.acceptEvidence(disputeId, evidenceId));
+    }
 }

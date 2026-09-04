@@ -32,3 +32,61 @@ export async function pollInvestigation(sessionId) {
     if (!res.ok) throw new Error("Failed to poll investigation");
     return res.json();
 }
+
+export async function submitDecision(id, decision, aiRecommendation) {
+    const res = await fetch(`${API_BASE}/disputes/${id}/decision`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ decision, aiRecommendation })
+    });
+    if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to submit decision");
+    }
+    return res;
+}
+
+export async function fetchAudits(id) {
+    const res = await fetch(`${API_BASE}/disputes/${id}/audits`);
+    if (!res.ok) throw new Error("Failed to fetch audits");
+    return res.json();
+}
+
+export async function createDisputeCase(payload) {
+    const res = await fetch(`${API_BASE}/disputes/intake`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (!res.ok) throw new Error("Failed to create dispute case");
+    return res.json();
+}
+
+export async function uploadEvidence(disputeId, file) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const res = await fetch(`${API_BASE}/disputes/${disputeId}/evidence/upload`, {
+        method: 'POST',
+        body: formData
+    });
+    if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Failed to upload evidence");
+    }
+    return res.json();
+}
+
+export async function acceptEvidence(disputeId, evidenceId) {
+    const res = await fetch(`${API_BASE}/disputes/${disputeId}/evidence/${evidenceId}/accept`, {
+        method: 'POST'
+    });
+    if (!res.ok) throw new Error("Failed to accept evidence");
+    return res.json();
+}
+
+export async function fetchPatterns() {
+    const res = await fetch(`${API_BASE}/patterns`);
+    if (!res.ok) throw new Error("Failed to fetch patterns");
+    return res.json();
+}

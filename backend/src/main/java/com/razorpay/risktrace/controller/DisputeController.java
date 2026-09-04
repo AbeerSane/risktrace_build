@@ -27,17 +27,20 @@ public class DisputeController {
     private final CaseAssessmentService assessmentService;
     private final AiInvestigationService aiInvestigationService;
     private final com.razorpay.risktrace.service.InvestigationLifecycleService lifecycleService;
+    private final com.razorpay.risktrace.service.DisputeIntakeService disputeIntakeService;
 
     public DisputeController(DisputeService disputeService, 
                              InvestigationEngineService investigationService, 
                              CaseAssessmentService assessmentService,
                              AiInvestigationService aiInvestigationService,
-                             com.razorpay.risktrace.service.InvestigationLifecycleService lifecycleService) {
+                             com.razorpay.risktrace.service.InvestigationLifecycleService lifecycleService,
+                             com.razorpay.risktrace.service.DisputeIntakeService disputeIntakeService) {
         this.disputeService = disputeService;
         this.investigationService = investigationService;
         this.assessmentService = assessmentService;
         this.aiInvestigationService = aiInvestigationService;
         this.lifecycleService = lifecycleService;
+        this.disputeIntakeService = disputeIntakeService;
     }
 
     @GetMapping
@@ -81,5 +84,22 @@ public class DisputeController {
     public ResponseEntity<Void> submitDecision(@PathVariable UUID id, @RequestBody com.razorpay.risktrace.dto.DecisionRequestDTO request, @org.springframework.beans.factory.annotation.Autowired com.razorpay.risktrace.service.DecisionWorkflowService decisionWorkflowService) {
         decisionWorkflowService.submitMerchantDecision(id, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/audits")
+    public ResponseEntity<java.util.List<com.razorpay.risktrace.dto.AuditEventDTO>> getAudits(@PathVariable UUID id) {
+        return ResponseEntity.ok(disputeService.getAuditEvents(id));
+    }
+
+    @PostMapping("/intake")
+    public ResponseEntity<DisputeSummaryDTO> intakeDispute(@RequestBody com.razorpay.risktrace.dto.DisputeIntakeDTO intakeRequest) {
+        com.razorpay.risktrace.entity.Dispute dispute = disputeIntakeService.processIntake(intakeRequest);
+        return ResponseEntity.ok(new DisputeSummaryDTO(
+            dispute.getId(), dispute.getMerchant().getName(),
+            dispute.getAmount(), dispute.getCurrency(), dispute.getReason(),
+            dispute.getStatus(), dispute.getDecision(), dispute.getPriorityScore(),
+            dispute.getPriorityLevel(), dispute.getUrgencyLevel(), dispute.getPotentialRecovery(),
+            dispute.getCompleteness(), dispute.getStrength(), dispute.getCreatedAt()
+        ));
     }
 }
