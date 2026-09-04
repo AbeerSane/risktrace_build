@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchDashboardMetrics } from "../api/api";
 import { useAuth } from "../context/AuthContext";
-import { Zap, ChevronRight, AlertTriangle } from "lucide-react";
+import { Zap, ChevronRight, AlertTriangle, ShieldCheck, ArrowUpRight, TrendingUp, Clock, FileCheck2, Cpu } from "lucide-react";
 
 export default function Dashboard() {
     const navigate = useNavigate();
@@ -23,137 +23,233 @@ export default function Dashboard() {
             });
     }, []);
 
-    if (loading) {
-        return (
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', gap: '1.5rem' }}>
-                <div className="cyber-loader"></div>
-                <h2 style={{ letterSpacing: '4px', textTransform: 'uppercase', color: '#a55eea', fontSize: '1.2rem', margin: 0 }}>Initializing Command Center...</h2>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="glass-panel" style={{ color: '#ff4757', padding: '2rem', border: '1px solid rgba(255, 71, 87, 0.4)', backgroundColor: 'rgba(255, 71, 87, 0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem' }}>
-                <AlertTriangle size={48} />
-                <h3 style={{ margin: 0, letterSpacing: '2px', textTransform: 'uppercase' }}>System Failure</h3>
-                <p style={{ fontFamily: 'monospace', margin: 0, opacity: 0.8 }}>{error}</p>
-            </div>
-        );
-    }
-
     const formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
         minimumFractionDigits: 0
     });
 
-    return (
-        <div style={{ fontFamily: 'system-ui, sans-serif' }}>
-            <header style={{ marginBottom: '3rem', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '1rem' }}>
-                <h1 style={{ fontSize: '2rem', fontWeight: 300, margin: 0, letterSpacing: '1px', color: '#f1f2f6' }}>Command Center</h1>
-                <p style={{ color: '#747d8c', marginTop: '0.5rem', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.85rem' }}>
-                    Welcome back, {user?.email}
-                </p>
-            </header>
+    if (loading) {
+        return (
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '60vh', gap: '1.25rem' }}>
+                <div className="rt-pulse-live" style={{ width: '16px', height: '16px' }} />
+                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: '#8B5CF6', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                    SYNCHRONIZING TELEMETRY...
+                </span>
+            </div>
+        );
+    }
 
-            {/* Hero Metric & Demo Shortcut */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
-                <div style={{ 
-                    background: 'linear-gradient(135deg, rgba(20, 18, 25, 0.8) 0%, rgba(15, 15, 18, 0.9) 100%)',
-                    border: '1px solid rgba(170, 59, 255, 0.2)',
-                    borderRadius: '12px', padding: '3rem 2rem',
-                    boxShadow: '0 10px 30px -10px rgba(170, 59, 255, 0.1)',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center'
-                }}>
-                    <span style={{ color: '#a55eea', textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.9rem', marginBottom: '1rem', fontWeight: 600 }}>Total Money At Risk</span>
-                    <span style={{ fontSize: '4rem', fontWeight: 200, color: '#f1f2f6', letterSpacing: '-2px', textShadow: '0 0 20px rgba(255, 255, 255, 0.1)' }}>
-                        {formatter.format(metrics.moneyAtRisk)}
+    if (error) {
+        return (
+            <div className="rt-card" style={{ padding: '2.5rem', border: '1px solid rgba(239, 68, 68, 0.4)', backgroundColor: 'rgba(239, 68, 68, 0.05)', textAlign: 'center', maxWidth: '600px', margin: '3rem auto' }}>
+                <AlertTriangle size={36} color="#EF4444" style={{ margin: '0 auto 1rem auto' }} />
+                <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#F8FAFC' }}>Telemetry Stream Disconnected</h3>
+                <p style={{ color: '#94A3B8', fontSize: '0.9rem', marginBottom: '1.5rem', fontFamily: 'var(--font-mono)' }}>{error}</p>
+                <button onClick={() => window.location.reload()} className="rt-btn rt-btn-secondary">
+                    Retry Connection
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div style={{ maxWidth: '1360px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            
+            {/* Top Workspace Banner */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1.5rem' }}>
+                <div>
+                    <span style={{ fontSize: '0.78rem', color: '#8B5CF6', fontWeight: 600, letterSpacing: '2px', textTransform: 'uppercase', display: 'block', marginBottom: '0.35rem' }}>
+                        PORTFOLIO RISK SURVEILLANCE
                     </span>
+                    <h2 style={{ fontSize: '1.85rem', fontWeight: 700, color: '#F8FAFC', letterSpacing: '-0.5px' }}>
+                        Merchant Risk Overview
+                    </h2>
                 </div>
 
-                <div style={{ 
-                    background: 'linear-gradient(135deg, rgba(231, 76, 60, 0.1) 0%, rgba(20, 18, 25, 0.9) 100%)',
-                    border: '1px solid rgba(231, 76, 60, 0.3)',
-                    borderRadius: '12px', padding: '2rem',
-                    boxShadow: '0 10px 30px -10px rgba(231, 76, 60, 0.2)',
-                    display: 'flex', flexDirection: 'column', justifyContent: 'center'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#e74c3c', marginBottom: '1rem' }}>
-                        <AlertTriangle size={20} />
-                        <span style={{ textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', fontWeight: 600 }}>High Priority Demo</span>
-                    </div>
-                    <h2 style={{ fontSize: '1.8rem', fontWeight: 300, margin: '0 0 1rem 0', color: '#f1f2f6' }}>Contradictory Evidence Detected</h2>
-                    <p style={{ color: '#ccc', marginBottom: '2rem', lineHeight: '1.5' }}>
-                        A seeded case involving 'Item defective' claims contains conflicting evidence. Ideal for demonstrating AI reasoning capabilities.
-                    </p>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <button 
-                        onClick={() => {
-                            const target = metrics.recentDisputes?.find(d => d.reason === "Item defective") || metrics.recentDisputes?.[0];
-                            if (target) navigate(`/disputes/${target.id}`);
-                        }}
-                        style={{
-                            background: '#e74c3c', color: '#fff', border: 'none', padding: '1rem 2rem',
-                            fontSize: '1rem', fontWeight: 600, letterSpacing: '1px', borderRadius: '8px', cursor: 'pointer',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                            boxShadow: '0 5px 15px rgba(231, 76, 60, 0.4)', transition: 'all 0.2s', width: 'fit-content'
-                        }}
+                        onClick={() => navigate('/disputes/new')} 
+                        className="rt-btn rt-btn-primary"
+                        style={{ padding: '0.65rem 1.25rem', fontSize: '0.85rem' }}
                     >
-                        <Zap size={18} /> LAUNCH LIVE DEMO <ChevronRight size={18} />
+                        Ingest Telemetry <ArrowUpRight size={16} />
                     </button>
                 </div>
             </div>
 
-            {/* Grid Metrics */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-                <MetricCard title="Active Disputes" value={metrics.activeDisputes} color="#3498db" />
-                <MetricCard title="High Priority" value={metrics.highPriorityCases} color="#e74c3c" />
-                <MetricCard title="Urgent Deadlines" value={metrics.urgentDeadlines} color="#f39c12" />
-                <MetricCard title="Avg Strength" value={`${metrics.averageCaseStrength.toFixed(1)}%`} color="#2ecc71" />
-                <MetricCard title="AI Requires Attention" value={metrics.aiInvestigationsRequiringAttention} color="#9b59b6" />
+            {/* Hero Section: Financial Exposure & High-Priority Case Launcher */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '1.5rem' }}>
+                {/* Total Money at Risk Card */}
+                <div className="rt-card" style={{ padding: '2.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', position: 'relative', overflow: 'hidden' }}>
+                    <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', background: 'radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%)', filter: 'blur(30px)' }} />
+                    
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+                            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#94A3B8', letterSpacing: '2px', textTransform: 'uppercase' }}>
+                                TOTAL DISPUTED EXPOSURE
+                            </span>
+                            <span className="rt-badge rt-badge-warning">
+                                Active Surveillance
+                            </span>
+                        </div>
+                        <div style={{ fontSize: 'clamp(2.8rem, 4vw, 3.8rem)', fontWeight: 700, color: '#F8FAFC', letterSpacing: '-1.5px', fontFamily: 'var(--font-sans)', lineHeight: 1.1 }}>
+                            {formatter.format(metrics.moneyAtRisk)}
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '2rem', display: 'flex', alignItems: 'center', gap: '2rem', borderTop: '1px solid var(--border-subtle)', paddingTop: '1.25rem' }}>
+                        <div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase' }}>Active Volume</div>
+                            <div style={{ fontSize: '1.15rem', fontWeight: 600, color: '#F8FAFC', fontFamily: 'var(--font-mono)' }}>{metrics.activeDisputes} Cases</div>
+                        </div>
+                        <div style={{ width: '1px', height: '30px', backgroundColor: 'var(--border-subtle)' }} />
+                        <div>
+                            <div style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase' }}>Average Win Strength</div>
+                            <div style={{ fontSize: '1.15rem', fontWeight: 600, color: '#10B981', fontFamily: 'var(--font-mono)' }}>{metrics.averageCaseStrength.toFixed(1)}%</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* High Priority Critical Case Launcher */}
+                <div className="rt-card" style={{ padding: '2.25rem', borderColor: 'rgba(239, 68, 68, 0.35)', background: 'linear-gradient(145deg, rgba(239, 68, 68, 0.06) 0%, var(--bg-surface-1) 100%)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', color: '#EF4444', marginBottom: '0.75rem' }}>
+                            <AlertTriangle size={18} />
+                            <span style={{ fontSize: '0.78rem', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase' }}>
+                                CONTRADICTORY EVIDENCE DETECTED
+                            </span>
+                        </div>
+                        <h3 style={{ fontSize: '1.35rem', fontWeight: 600, color: '#F8FAFC', marginBottom: '0.6rem', letterSpacing: '-0.3px' }}>
+                            High-Confidence Defence Ready
+                        </h3>
+                        <p style={{ color: '#94A3B8', fontSize: '0.88rem', lineHeight: '1.6' }}>
+                            Conflicting facts isolated between tracking coordinates and customer claim. Run the AI engine to generate evidence arbitration packet.
+                        </p>
+                    </div>
+
+                    <div style={{ marginTop: '1.75rem' }}>
+                        <button 
+                            onClick={() => {
+                                const target = metrics.recentDisputes?.find(d => d.reason === "Item defective") || metrics.recentDisputes?.[0];
+                                if (target) navigate(`/disputes/${target.id}`);
+                            }}
+                            className="rt-btn"
+                            style={{ backgroundColor: '#EF4444', color: '#fff', padding: '0.75rem 1.5rem', fontSize: '0.88rem', boxShadow: '0 4px 15px rgba(239, 68, 68, 0.35)' }}
+                        >
+                            <Zap size={16} /> Launch Investigation <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
             </div>
 
-            {/* Recent Disputes Table */}
-            <div>
-                <h3 style={{ color: '#f1f2f6', fontWeight: 400, letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Recent Activity</h3>
-                <div className="glass-panel" style={{ overflow: 'hidden' }}>
+            {/* Metrics Surveillance Grid */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.25rem' }}>
+                <MetricStatCard 
+                    icon={<FileCheck2 size={20} color="#38BDF8" />}
+                    title="Active Disputes" 
+                    value={metrics.activeDisputes} 
+                    detail="Under active review"
+                />
+                <MetricStatCard 
+                    icon={<AlertTriangle size={20} color="#EF4444" />}
+                    title="High Priority" 
+                    value={metrics.highPriorityCases} 
+                    detail="Immediate action needed"
+                    badge="CRITICAL"
+                />
+                <MetricStatCard 
+                    icon={<Clock size={20} color="#F59E0B" />}
+                    title="Urgent Deadlines" 
+                    value={metrics.urgentDeadlines} 
+                    detail="< 48h to submit proof"
+                />
+                <MetricStatCard 
+                    icon={<Cpu size={20} color="#8B5CF6" />}
+                    title="AI Queue Attention" 
+                    value={metrics.aiInvestigationsRequiringAttention} 
+                    detail="Review required"
+                />
+            </div>
+
+            {/* Recent Dispute Stream Table */}
+            <div className="rt-card" style={{ padding: '1.75rem 2rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                    <div>
+                        <h3 style={{ fontSize: '1.15rem', fontWeight: 600, color: '#F8FAFC', letterSpacing: '-0.2px' }}>
+                            Recent Dispute Telemetry
+                        </h3>
+                        <p style={{ fontSize: '0.82rem', color: '#64748B' }}>
+                            Latest financial challenges received across connected merchant gateways
+                        </p>
+                    </div>
+                    <Link to="/disputes" style={{ fontSize: '0.85rem', color: '#8B5CF6', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                        View All Disputes <ChevronRight size={16} />
+                    </Link>
+                </div>
+
+                <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                        <thead style={{ backgroundColor: 'rgba(0,0,0,0.2)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#747d8c' }}>
-                            <tr>
-                                <th style={{ padding: '1rem' }}>Dispute ID</th>
-                                <th style={{ padding: '1rem' }}>Amount</th>
-                                <th style={{ padding: '1rem' }}>Status</th>
-                                <th style={{ padding: '1rem' }}>AI Decision</th>
+                        <thead>
+                            <tr style={{ borderBottom: '1px solid var(--border-subtle)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#64748B' }}>
+                                <th style={{ padding: '0.85rem 1rem' }}>Dispute ID</th>
+                                <th style={{ padding: '0.85rem 1rem' }}>Reason</th>
+                                <th style={{ padding: '0.85rem 1rem' }}>Amount</th>
+                                <th style={{ padding: '0.85rem 1rem' }}>Status</th>
+                                <th style={{ padding: '0.85rem 1rem' }}>AI Decision</th>
+                                <th style={{ padding: '0.85rem 1rem', textAlign: 'right' }}>Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             {metrics.recentDisputes?.map(d => (
-                                <tr key={d.id} style={{ borderTop: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s', cursor: 'pointer' }} onMouseOver={e => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={e => e.currentTarget.style.background = 'transparent'}>
-                                    <td style={{ padding: '1rem', color: '#a55eea' }}><Link to={`/disputes/${d.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>{d.id.substring(0,8)}...</Link></td>
-                                    <td style={{ padding: '1rem', color: '#f1f2f6' }}>{formatter.format(d.amount)}</td>
+                                <tr 
+                                    key={d.id} 
+                                    style={{ borderBottom: '1px solid var(--border-subtle)', transition: 'background-color 0.15s ease' }}
+                                    onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.02)'}
+                                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                                >
+                                    <td style={{ padding: '1rem', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: '#8B5CF6' }}>
+                                        <Link to={`/disputes/${d.id}`} style={{ color: 'inherit' }}>
+                                            {d.id.substring(0, 8)}...
+                                        </Link>
+                                    </td>
+                                    <td style={{ padding: '1rem', color: '#CBD5E1', fontSize: '0.9rem' }}>
+                                        {d.reason}
+                                    </td>
+                                    <td style={{ padding: '1rem', fontFamily: 'var(--font-mono)', fontWeight: 600, color: '#F8FAFC' }}>
+                                        {formatter.format(d.amount)}
+                                    </td>
                                     <td style={{ padding: '1rem' }}>
-                                        <span style={{ fontSize: '0.75rem', padding: '4px 8px', borderRadius: '4px', background: 'rgba(255,255,255,0.1)', color: '#ccc' }}>
+                                        <span className="rt-badge rt-badge-info">
                                             {d.status}
                                         </span>
                                     </td>
-                                    <td style={{ padding: '1rem', color: d.decision === 'PENDING' ? '#f39c12' : '#2ecc71' }}>{d.decision}</td>
-                                </tr>
-                            ))}
-                            {(!metrics.recentDisputes || metrics.recentDisputes.length === 0) && (
-                                <tr>
-                                    <td colSpan="4" style={{ padding: '4rem 2rem', textAlign: 'center', color: '#747d8c' }}>
-                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
-                                            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '50%' }}>
-                                                <AlertTriangle size={32} opacity={0.5} />
-                                            </div>
-                                            <div>
-                                                <div style={{ fontSize: '1.1rem', color: '#f1f2f6', marginBottom: '0.5rem' }}>No Active Telemetry</div>
-                                                <div style={{ fontSize: '0.9rem' }}>The system has not detected any recent dispute activity.</div>
-                                            </div>
-                                        </div>
+                                    <td style={{ padding: '1rem' }}>
+                                        <span className={`rt-badge ${d.decision === 'ACCEPT' ? 'rt-badge-success' : d.decision === 'CONTEST' ? 'rt-badge-critical' : 'rt-badge-warning'}`}>
+                                            {d.decision}
+                                        </span>
+                                    </td>
+                                    <td style={{ padding: '1rem', textAlign: 'right' }}>
+                                        <button 
+                                            onClick={() => navigate(`/disputes/${d.id}`)}
+                                            style={{
+                                                background: 'transparent',
+                                                border: '1px solid var(--border-subtle)',
+                                                borderRadius: '6px',
+                                                padding: '0.4rem 0.85rem',
+                                                color: '#CBD5E1',
+                                                fontSize: '0.8rem',
+                                                cursor: 'pointer',
+                                                transition: 'all 0.18s ease'
+                                            }}
+                                            onMouseOver={e => { e.currentTarget.style.borderColor = '#8B5CF6'; e.currentTarget.style.color = '#F8FAFC'; }}
+                                            onMouseOut={e => { e.currentTarget.style.borderColor = 'var(--border-subtle)'; e.currentTarget.style.color = '#CBD5E1'; }}
+                                        >
+                                            Investigate →
+                                        </button>
                                     </td>
                                 </tr>
-                            )}
+                            ))}
                         </tbody>
                     </table>
                 </div>
@@ -162,25 +258,30 @@ export default function Dashboard() {
     );
 }
 
-function MetricCard({ title, value, color }) {
-    const [hover, setHover] = useState(false);
+function MetricStatCard({ icon, title, value, detail, badge }) {
     return (
-        <div 
-            onMouseEnter={() => setHover(true)}
-            onMouseLeave={() => setHover(false)}
-            style={{ 
-                background: 'rgba(20, 18, 25, 0.6)', 
-                border: `1px solid ${hover ? color : 'rgba(255,255,255,0.05)'}`,
-                borderRadius: '8px', 
-                padding: '1.5rem',
-                display: 'flex', flexDirection: 'column',
-                transition: 'all 0.3s ease',
-                transform: hover ? 'translateY(-4px)' : 'translateY(0)',
-                boxShadow: hover ? `0 10px 20px -10px ${color}40` : 'none'
-            }}
-        >
-            <span style={{ color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px', fontSize: '0.75rem', marginBottom: '0.5rem' }}>{title}</span>
-            <span style={{ color: '#f1f2f6', fontSize: '2.5rem', fontWeight: 300 }}>{value}</span>
+        <div className="rt-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'var(--bg-surface-2)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border-subtle)' }}>
+                    {icon}
+                </div>
+                {badge && (
+                    <span className="rt-badge rt-badge-critical" style={{ fontSize: '0.65rem' }}>
+                        {badge}
+                    </span>
+                )}
+            </div>
+            <div>
+                <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '0.25rem' }}>
+                    {title}
+                </div>
+                <div style={{ fontSize: '2rem', fontWeight: 700, color: '#F8FAFC', fontFamily: 'var(--font-mono)', lineHeight: 1.1 }}>
+                    {value}
+                </div>
+            </div>
+            <div style={{ fontSize: '0.75rem', color: '#94A3B8', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.6rem' }}>
+                {detail}
+            </div>
         </div>
     );
 }

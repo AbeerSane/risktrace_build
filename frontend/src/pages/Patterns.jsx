@@ -72,45 +72,68 @@ export default function Patterns() {
     const totalExposure = patterns.reduce((sum, p) => sum + p.moneyExposed, 0);
 
     if (loading) return (
-        <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#0a0a0c' }}>
+        <div style={{ height: 'calc(100vh - 4rem)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-base)' }}>
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 2, ease: "linear" }}>
-                <Scan size={48} color="#a55eea" />
+                <Scan size={40} color="var(--accent-violet)" />
             </motion.div>
-            <h2 style={{ color: '#f1f2f6', marginTop: '1rem', fontWeight: 300, letterSpacing: '2px' }}>INITIALIZING PATTERN INTEL</h2>
+            <h2 style={{ color: 'var(--text-main)', marginTop: '1.25rem', fontWeight: 600, letterSpacing: '0.1em', fontSize: '1rem', textTransform: 'uppercase' }}>Synthesizing Pattern Intelligence...</h2>
         </div>
     );
 
     if (patterns.length === 0) {
         return (
-            <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#747d8c' }}>
-                <ShieldAlert size={64} style={{ opacity: 0.3, marginBottom: '1rem' }} />
-                <h2 style={{ fontWeight: 300, letterSpacing: '2px' }}>NO SYSTEMIC ANOMALIES</h2>
+            <div style={{ height: 'calc(100vh - 4rem)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'var(--text-muted)' }}>
+                <ShieldAlert size={48} style={{ opacity: 0.3, marginBottom: '1rem' }} />
+                <h2 style={{ fontWeight: 600, letterSpacing: '0.08em', fontSize: '1.1rem', color: 'var(--text-main)' }}>NO SYSTEMIC ANOMALIES DETECTED</h2>
+                <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>All payment disputes appear isolated without correlated fraud rings.</p>
             </div>
         );
     }
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: 'calc(100vh - 4rem)', background: '#0a0a0c', overflow: 'hidden', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ 
+            position: 'relative', 
+            width: '100%', 
+            height: 'calc(100vh - 5rem)', 
+            background: 'var(--bg-base)', 
+            backgroundImage: 'radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px)',
+            backgroundSize: '24px 24px',
+            overflow: 'hidden', 
+            borderRadius: '12px', 
+            border: '1px solid var(--border-subtle)' 
+        }}>
             
             {/* Header Overlay */}
-            <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '2rem', zIndex: 10, display: 'flex', justifyContent: 'space-between', background: 'linear-gradient(180deg, rgba(10,10,12,0.9) 0%, transparent 100%)' }}>
+            <div style={{ 
+                position: 'absolute', top: 0, left: 0, right: 0, padding: '1.5rem 2rem', zIndex: 10, 
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                background: 'linear-gradient(180deg, rgba(8,8,10,0.95) 0%, rgba(8,8,10,0.6) 80%, transparent 100%)',
+                backdropFilter: 'blur(8px)',
+                borderBottom: '1px solid var(--border-subtle)'
+            }}>
                 <div>
-                    <h1 style={{ fontSize: '1.5rem', fontWeight: 300, margin: 0, letterSpacing: '2px', color: '#f1f2f6', display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
-                        <Network size={24} color="#a55eea" /> PATTERN INTELLIGENCE
-                    </h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                        <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                            <Network size={18} color="var(--accent-violet)" />
+                        </div>
+                        <h1 style={{ fontSize: '1.25rem', fontWeight: 700, margin: 0, letterSpacing: '-0.02em', color: 'var(--text-main)' }}>
+                            Systemic Pattern Surveillance
+                        </h1>
+                        <span className="rt-badge rt-badge-violet">GRAPH AI</span>
+                    </div>
                     <motion.div 
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                        style={{ color: '#a55eea', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '2px', marginTop: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        style={{ color: 'var(--accent-violet)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}
                     >
-                        {stage === 0 && <><Scan size={14} /> Scanning unlinked disputes...</>}
-                        {stage === 1 && <><Crosshair size={14} /> Clustering shared attributes...</>}
-                        {stage >= 2 && <><ShieldAlert size={14} /> Systemic vulnerabilities detected</>}
+                        {stage === 0 && <><Scan size={13} /> Scanning cross-merchant dispute topology...</>}
+                        {stage === 1 && <><Crosshair size={13} /> Correlating coordinated chargeback clusters...</>}
+                        {stage >= 2 && <><ShieldAlert size={13} color="var(--accent-red)" /> Systemic syndicate anomalies detected</>}
                     </motion.div>
                 </div>
                 {stage >= 2 && (
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'right' }}>
-                        <div style={{ color: '#ff4757', fontSize: '1.8rem', fontWeight: 300, letterSpacing: '1px' }}>{formatter.format(totalExposure)}</div>
-                        <div style={{ color: '#747d8c', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.7rem' }}>Total Systemic Risk</div>
+                    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'right' }}>
+                        <div style={{ color: 'var(--accent-red)', fontSize: '1.75rem', fontWeight: 700, letterSpacing: '-0.02em', fontFamily: 'var(--font-mono)' }}>{formatter.format(totalExposure)}</div>
+                        <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.7rem', fontWeight: 600 }}>Total Correlated Exposure</div>
                     </motion.div>
                 )}
             </div>
@@ -217,28 +240,39 @@ export default function Patterns() {
                 {selectedPattern && (
                     <motion.div 
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(10,10,12,0.8)', zIndex: 20 }}
+                        style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(8, 8, 10, 0.7)', backdropFilter: 'blur(4px)', zIndex: 20 }}
                     >
                         <motion.div 
-                            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: "spring", damping: 25 }}
-                            style={{ position: 'absolute', top: 0, right: 0, width: '400px', height: '100%', background: '#131117', borderLeft: `1px solid ${selectedPattern.title.toLowerCase().includes("fraud") ? '#e74c3c' : '#f39c12'}40`, padding: '2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}
+                            initial={{ x: '100%' }} animate={{ x: 0 }} exit={{ x: '100%' }} transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                            style={{ 
+                                position: 'absolute', top: 0, right: 0, width: '440px', height: '100%', 
+                                background: 'var(--bg-surface-1)', 
+                                borderLeft: `1px solid var(--border-subtle)`, 
+                                padding: '2rem', overflowY: 'auto', display: 'flex', flexDirection: 'column',
+                                boxShadow: '-20px 0 50px rgba(0,0,0,0.5)'
+                            }}
                         >
-                            <button onClick={() => setSelectedPattern(null)} style={{ alignSelf: 'flex-end', background: 'transparent', border: 'none', color: '#747d8c', cursor: 'pointer', padding: '0.5rem' }}><X size={24} /></button>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                <span className="rt-badge rt-badge-neutral">CLUSTER INTEL</span>
+                                <button onClick={() => setSelectedPattern(null)} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-subtle)', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.4rem', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                    <X size={18} />
+                                </button>
+                            </div>
                             
-                            <h2 style={{ fontSize: '1.5rem', color: '#f1f2f6', margin: '0 0 0.5rem 0' }}>{selectedPattern.title}</h2>
-                            <div style={{ fontSize: '2rem', color: selectedPattern.title.toLowerCase().includes("fraud") ? '#e74c3c' : '#f39c12', fontWeight: 300, marginBottom: '2rem' }}>
+                            <h2 style={{ fontSize: '1.25rem', color: 'var(--text-main)', margin: '0 0 0.5rem 0', fontWeight: 700, letterSpacing: '-0.02em' }}>{selectedPattern.title}</h2>
+                            <div style={{ fontSize: '2rem', color: selectedPattern.title.toLowerCase().includes("fraud") ? 'var(--accent-red)' : 'var(--accent-amber)', fontWeight: 700, fontFamily: 'var(--font-mono)', marginBottom: '1.75rem', letterSpacing: '-0.02em' }}>
                                 {formatter.format(selectedPattern.moneyExposed)}
                             </div>
 
                             <AnimatePresence>
                                 {/* Stage 0 & 1: Common Attributes & Evidence */}
                                 {explanationStage >= 1 && (
-                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '2rem' }}>
-                                        <h3 style={{ fontSize: '0.8rem', color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Supporting Evidence</h3>
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '1.5rem' }}>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem', fontWeight: 600 }}>Supporting Evidence</div>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                                             {selectedPattern.aiExplanation?.supportingEvidence?.map((ev, idx) => (
-                                                <div key={idx} style={{ background: 'rgba(255,255,255,0.03)', padding: '0.8rem', borderRadius: '6px', borderLeft: '2px solid #3498db' }}>
-                                                    <div style={{ fontSize: '0.9rem', color: '#f1f2f6' }}>{ev}</div>
+                                                <div key={idx} className="rt-card" style={{ padding: '0.85rem 1rem', borderLeft: '3px solid var(--accent-violet)' }}>
+                                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', lineHeight: 1.5 }}>{ev}</div>
                                                 </div>
                                             ))}
                                         </div>
@@ -247,46 +281,44 @@ export default function Patterns() {
 
                                 {/* Stage 2: AI Interpretation */}
                                 {explanationStage >= 2 && (
-                                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '2rem', position: 'relative' }}>
-                                        {/* Visual connection line from evidence */}
-                                        <div style={{ position: 'absolute', left: '10px', top: '-20px', width: '2px', height: '20px', background: 'rgba(165, 94, 234, 0.5)' }} />
-                                        
-                                        <h3 style={{ fontSize: '0.8rem', color: '#a55eea', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(165, 94, 234, 0.3)', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <Scan size={14} /> AI Interpretation
-                                        </h3>
-                                        <div style={{ background: 'rgba(165, 94, 234, 0.1)', border: '1px solid rgba(165, 94, 234, 0.5)', padding: '1rem', borderRadius: '6px', color: '#f1f2f6', fontSize: '0.9rem', lineHeight: 1.5 }}>
-                                            <p style={{ margin: '0 0 1rem 0' }}><strong>Connection:</strong> {selectedPattern.aiExplanation?.connectionReason}</p>
-                                            <p style={{ margin: '0 0 1rem 0', color: '#f39c12' }}><strong>Likely Problem:</strong> {selectedPattern.aiExplanation?.likelyProblem}</p>
-                                            <p style={{ margin: 0, color: '#747d8c', fontSize: '0.8rem' }}><em>Uncertainty: {selectedPattern.aiExplanation?.uncertainty}</em></p>
+                                    <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} style={{ marginBottom: '1.5rem', position: 'relative' }}>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--accent-violet)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+                                            <Scan size={13} /> AI Correlation Analysis
+                                        </div>
+                                        <div className="rt-card" style={{ padding: '1rem', border: '1px solid rgba(139, 92, 246, 0.2)', background: 'rgba(139, 92, 246, 0.05)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+                                            <p style={{ margin: '0 0 0.75rem 0', color: 'var(--text-main)' }}><strong>Pattern Linkage:</strong> {selectedPattern.aiExplanation?.connectionReason}</p>
+                                            <p style={{ margin: '0 0 0.75rem 0', color: 'var(--accent-amber)' }}><strong>Syndicate Vector:</strong> {selectedPattern.aiExplanation?.likelyProblem}</p>
+                                            <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.75rem' }}><em>Confidence bounds: {selectedPattern.aiExplanation?.uncertainty}</em></p>
                                         </div>
                                     </motion.div>
                                 )}
 
                                 {/* Stage 3: Root Cause / Recommendation */}
                                 {explanationStage >= 3 && (
-                                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ marginBottom: '2rem' }}>
-                                        <h3 style={{ fontSize: '0.8rem', color: '#2ecc71', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(46, 204, 113, 0.3)', paddingBottom: '0.5rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                            <ShieldAlert size={14} /> Recommended Next Action
-                                        </h3>
-                                        <div style={{ background: 'rgba(46, 204, 113, 0.1)', border: '1px solid #2ecc71', padding: '1rem', borderRadius: '6px', color: '#2ecc71', fontSize: '1rem', fontWeight: 'bold' }}>
+                                    <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} style={{ marginBottom: '1.75rem' }}>
+                                        <div style={{ fontSize: '0.72rem', color: 'var(--accent-green)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+                                            <ShieldAlert size={13} /> Recommended Defensive Countermeasure
+                                        </div>
+                                        <div className="rt-card" style={{ border: '1px solid var(--accent-green)', background: 'rgba(16, 185, 129, 0.05)', padding: '1rem', color: 'var(--accent-green)', fontSize: '0.9rem', fontWeight: 600, lineHeight: 1.5 }}>
                                             {selectedPattern.aiExplanation?.recommendedInvestigation}
                                         </div>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
 
-                            <h3 style={{ fontSize: '0.8rem', color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>
-                                Affected Disputes ({selectedPattern.affectedDisputeIds.length})
-                            </h3>
+                            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.75rem', fontWeight: 600, borderTop: '1px solid var(--border-subtle)', paddingTop: '1.25rem' }}>
+                                Linked Disputes ({selectedPattern.affectedDisputeIds.length})
+                            </div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                 {selectedPattern.affectedDisputeIds.map((id) => (
                                     <button 
                                         key={id}
                                         onClick={() => navigate(`/disputes/${id}`)}
-                                        className="dispute-list-item"
+                                        className="rt-btn-secondary"
+                                        style={{ justifyContent: 'space-between', padding: '0.65rem 1rem', fontSize: '0.8rem', fontFamily: 'var(--font-mono)' }}
                                     >
-                                        <span style={{ fontFamily: 'monospace' }}>{id.substring(0, 8)}...</span>
-                                        <ChevronRight size={16} />
+                                        <span>{id.substring(0, 16)}...</span>
+                                        <ChevronRight size={14} color="var(--text-muted)" />
                                     </button>
                                 ))}
                             </div>

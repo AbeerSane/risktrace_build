@@ -83,44 +83,52 @@ export default function FinalWorkspace({ dispute, payload, onReassess }) {
     const accentColor = isContest ? '#2ecc71' : '#e74c3c';
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '1200px', margin: '0 auto', color: '#f1f2f6', fontFamily: 'system-ui, sans-serif', position: 'relative' }}>
+        <div style={{ padding: '2rem 0', maxWidth: '1280px', margin: '0 auto', color: 'var(--text-main)', fontFamily: 'var(--font-sans)', position: 'relative' }}>
             
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 3fr', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: '2rem' }}>
                 
                 {/* Left Sidebar: Case Meta (STAGE 1) */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', opacity: stage >= 1 ? 1 : 0, transition: 'opacity 0.8s', transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)' }}>
-                    <div style={{ background: 'rgba(20, 18, 25, 0.8)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <h3 style={{ margin: '0 0 1rem 0', color: '#747d8c', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>1. System Context</h3>
-                        <div style={{ fontSize: '2rem', fontWeight: 300, marginBottom: '1rem' }}>{formatter.format(dispute.amount)}</div>
-                        <div style={{ fontSize: '0.9rem', color: '#ccc', marginBottom: '1rem' }}>{dispute.reason}</div>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1rem', marginTop: '1rem', fontSize: '0.8rem' }}>
-                            <span style={{ color: '#747d8c' }}>Deadline</span>
-                            <span style={{ color: '#ff4757' }}>{deadline}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', opacity: stage >= 1 ? 1 : 0, transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1)', transform: stage >= 1 ? 'translateY(0)' : 'translateY(20px)' }}>
+                    <div className="rt-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>1. System Context</span>
+                            <span className="rt-badge rt-badge-neutral">{dispute.status}</span>
+                        </div>
+                        <div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '0.25rem' }}>Disputed Amount</div>
+                            <div style={{ fontSize: '2.25rem', fontWeight: 700, letterSpacing: '-0.03em', color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{formatter.format(dispute.amount)}</div>
+                        </div>
+                        <div style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', lineHeight: 1.5, background: 'rgba(255,255,255,0.02)', padding: '0.75rem', borderRadius: '8px', border: '1px solid var(--border-subtle)' }}>
+                            {dispute.reason}
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid var(--border-subtle)', paddingTop: '0.85rem', fontSize: '0.8rem' }}>
+                            <span style={{ color: 'var(--text-muted)' }}>Response Deadline</span>
+                            <span style={{ color: 'var(--accent-red)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{deadline}</span>
                         </div>
                     </div>
 
-                    <div style={{ background: 'rgba(20, 18, 25, 0.8)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div style={{ marginBottom: '1rem' }}>
+                    <div className="rt-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                        <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
-                                <span>Strength</span>
-                                <span style={{ color: assessment.overallStrengthScore > 70 ? '#2ecc71' : '#f39c12' }}>{assessment.overallStrengthScore}%</span>
+                                <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Case Strength</span>
+                                <span style={{ color: assessment.overallStrengthScore > 70 ? 'var(--accent-green)' : 'var(--accent-amber)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{assessment.overallStrengthScore}%</span>
                             </div>
-                            <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', height: '4px', borderRadius: '2px' }}>
-                                <motion.div animate={{ width: stage >= 1 ? `${assessment.overallStrengthScore}%` : '0%' }} transition={{ duration: 1 }} style={{ height: '100%', background: assessment.overallStrengthScore > 70 ? '#2ecc71' : '#f39c12', borderRadius: '2px' }} />
+                            <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', height: '6px', borderRadius: '999px', overflow: 'hidden' }}>
+                                <motion.div animate={{ width: stage >= 1 ? `${assessment.overallStrengthScore}%` : '0%' }} transition={{ duration: 1 }} style={{ height: '100%', background: assessment.overallStrengthScore > 70 ? 'var(--accent-green)' : 'var(--accent-amber)', borderRadius: '999px' }} />
                             </div>
                         </div>
 
-                        <div style={{ marginBottom: '1.5rem' }}>
+                        <div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
-                                <span>Completeness</span>
-                                <span style={{ color: '#3498db' }}>{assessment.evidenceCompletenessScore}%</span>
+                                <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>Evidence Completeness</span>
+                                <span style={{ color: 'var(--accent-violet)', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{assessment.evidenceCompletenessScore}%</span>
                             </div>
-                            <div style={{ width: '100%', background: 'rgba(255,255,255,0.1)', height: '4px', borderRadius: '2px' }}>
-                                <motion.div animate={{ width: stage >= 1 ? `${assessment.evidenceCompletenessScore}%` : '0%' }} transition={{ duration: 1 }} style={{ height: '100%', background: '#3498db', borderRadius: '2px' }} />
+                            <div style={{ width: '100%', background: 'rgba(255,255,255,0.06)', height: '6px', borderRadius: '999px', overflow: 'hidden' }}>
+                                <motion.div animate={{ width: stage >= 1 ? `${assessment.evidenceCompletenessScore}%` : '0%' }} transition={{ duration: 1 }} style={{ height: '100%', background: 'var(--accent-violet)', borderRadius: '999px' }} />
                             </div>
                         </div>
 
-                        <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '1.25rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <EvidenceUploadButton 
                                 disputeId={dispute.id} 
                                 onUploadSuccess={(ev) => {
@@ -143,8 +151,11 @@ export default function FinalWorkspace({ dispute, payload, onReassess }) {
                         </div>
                     </div>
                     
-                    <div style={{ background: 'rgba(20, 18, 25, 0.8)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                        <h3 style={{ margin: '0 0 1rem 0', color: '#747d8c', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '1px' }}>Audit Trail</h3>
+                    <div className="rt-card" style={{ padding: '1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.12em', fontWeight: 600 }}>Audit Ledger</span>
+                            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent-green)', boxShadow: '0 0 6px var(--accent-green)' }} />
+                        </div>
                         <AuditTimeline disputeId={dispute.id} refreshTrigger={stage} />
                     </div>
                 </div>
@@ -188,29 +199,34 @@ export default function FinalWorkspace({ dispute, payload, onReassess }) {
                     )}
 
                     {/* AI Reasoning Reveal (STAGE 5) */}
-                    <div style={{ 
-                        background: 'rgba(20, 18, 25, 0.9)', padding: '2rem', borderRadius: '12px', 
-                        border: stage >= 5 ? (ai.status === 'FAILED' ? '1px solid #e74c3c' : '1px solid #a55eea') : '1px solid rgba(255,255,255,0.05)',
-                        boxShadow: stage >= 5 ? (ai.status === 'FAILED' ? '0 0 30px rgba(231, 76, 60, 0.1)' : '0 0 30px rgba(170, 59, 255, 0.1)') : 'none',
-                        transition: 'all 1s',
+                    <div className="rt-card" style={{ 
+                        padding: '2rem', 
+                        borderColor: stage >= 5 ? (ai.status === 'FAILED' ? 'var(--accent-red)' : 'var(--border-strong)') : 'var(--border-subtle)',
+                        boxShadow: stage >= 5 ? (ai.status === 'FAILED' ? '0 0 30px rgba(239, 68, 68, 0.1)' : 'var(--shadow-elevation)') : 'none',
+                        transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
                         zIndex: 10,
                         opacity: stage >= 5 ? 1 : 0,
                         transform: stage >= 5 ? 'translateY(0)' : 'translateY(20px)'
                     }}>
                         {ai.status === 'FAILED' ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '100px', color: '#e74c3c' }}>
-                                <AlertTriangle size={32} style={{ marginBottom: '1rem' }} />
-                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 400 }}>AI Investigation Unavailable</h3>
-                                <p style={{ color: '#747d8c', fontSize: '0.9rem', margin: 0 }}>{ai.reason || "The AI system failed to generate a reasoning response."} Preserving deterministic case assessment.</p>
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '120px', color: 'var(--accent-red)' }}>
+                                <AlertTriangle size={32} style={{ marginBottom: '0.75rem' }} />
+                                <h3 style={{ margin: '0 0 0.5rem 0', fontWeight: 600, fontSize: '1.1rem' }}>AI Investigation Unavailable</h3>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>{ai.reason || "The AI system failed to generate a reasoning response."} Preserving deterministic case assessment.</p>
                             </div>
                         ) : (
                             <>
-                                <h3 style={{ margin: '0 0 1.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#a55eea' }}>
-                                    <Zap size={18} /> 5. AI Risk Interpretation
-                                </h3>
-                                <div style={{ lineHeight: '1.8', color: '#f1f2f6', fontSize: '1.1rem', fontWeight: 300, minHeight: '100px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                                            <Zap size={15} color="var(--accent-violet)" />
+                                        </div>
+                                        <span style={{ fontSize: '0.85rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent-violet)' }}>5. Autonomous Risk Interpretation</span>
+                                    </div>
+                                    <span className="rt-badge rt-badge-violet">SYNTHESIZED</span>
+                                </div>
+                                <div style={{ lineHeight: '1.8', color: 'var(--text-main)', fontSize: '1.125rem', fontWeight: 300, minHeight: '100px' }}>
                                     {stage >= 5 && sentences.map((sentence, i) => {
-                                        // Super rough keyword logic to figure out which evidence box to "pulse" while this sentence is read
                                         const s = sentence.toLowerCase();
                                         const isSupporting = s.includes('support') || s.includes('match') || s.includes('valid') || s.includes('verify');
                                         const isMissing = s.includes('miss') || s.includes('fail') || s.includes('lack');
@@ -235,48 +251,64 @@ export default function FinalWorkspace({ dispute, payload, onReassess }) {
                     {/* Evidence Grid (STAGES 2, 3, 4) */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', zIndex: 10 }}>
                         
-                        <div id="ev-supporting" style={{ 
-                            background: 'rgba(46, 204, 113, 0.05)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(46, 204, 113, 0.2)',
-                            opacity: stage >= 2 ? 1 : 0, transform: stage >= 2 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s'
+                        <div id="ev-supporting" className="rt-card" style={{ 
+                            padding: '1.5rem',
+                            opacity: stage >= 2 ? 1 : 0, transform: stage >= 2 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
                         }}>
-                            <h4 style={{ margin: '0 0 1rem 0', color: '#2ecc71', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                2. Strongest Evidence
-                            </h4>
-                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                                <span style={{ color: 'var(--accent-green)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
+                                    <CheckCircle size={15} color="var(--accent-green)" /> 2. Strongest Evidence
+                                </span>
+                                <span className="rt-badge rt-badge-success">{assessment.supportingEvidence?.length || 0} VERIFIED</span>
+                            </div>
+                            <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                 {assessment.supportingEvidence?.map((ev, i) => (
-                                    <li key={i} style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#ccc' }}>
-                                        <CheckCircle size={14} color="#2ecc71" style={{ marginTop: '2px', flexShrink: 0 }} /> {ev}
+                                    <li key={i} style={{ fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.6rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                        <CheckCircle size={14} color="var(--accent-green)" style={{ marginTop: '3px', flexShrink: 0 }} />
+                                        <span>{ev}</span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                            <div id="ev-missing" style={{ 
-                                background: 'rgba(243, 156, 18, 0.05)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(243, 156, 18, 0.2)',
-                                opacity: stage >= 3 ? 1 : 0, transform: stage >= 3 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s'
+                            <div id="ev-missing" className="rt-card" style={{ 
+                                padding: '1.5rem',
+                                opacity: stage >= 3 ? 1 : 0, transform: stage >= 3 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
                             }}>
-                                <h4 style={{ margin: '0 0 1rem 0', color: '#f39c12', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                    3. What Is Missing
-                                </h4>
-                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                                    <span style={{ color: 'var(--accent-amber)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
+                                        <AlertTriangle size={15} color="var(--accent-amber)" /> 3. What Is Missing
+                                    </span>
+                                    <span className="rt-badge rt-badge-warning">{invResult.missingEvidence?.length || 0} GAPS</span>
+                                </div>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                     {invResult.missingEvidence?.length > 0 ? invResult.missingEvidence.map((ev, i) => (
-                                        <li key={i} style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#ccc' }}><AlertTriangle size={14} color="#f39c12" style={{ marginTop: '2px', flexShrink: 0 }}/> {ev}</li>
-                                    )) : <li style={{ fontSize: '0.9rem', color: '#747d8c' }}>No critical evidence missing.</li>}
+                                        <li key={i} style={{ fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.6rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                            <AlertTriangle size={14} color="var(--accent-amber)" style={{ marginTop: '3px', flexShrink: 0 }}/>
+                                            <span>{ev}</span>
+                                        </li>
+                                    )) : <li style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>No critical evidence missing.</li>}
                                 </ul>
                             </div>
 
-                            <div id="ev-conflict" style={{ 
-                                background: 'rgba(231, 76, 60, 0.05)', padding: '1.5rem', borderRadius: '12px', border: '1px solid rgba(231, 76, 60, 0.2)',
-                                opacity: stage >= 4 ? 1 : 0, transform: stage >= 4 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s'
+                            <div id="ev-conflict" className="rt-card" style={{ 
+                                padding: '1.5rem',
+                                opacity: stage >= 4 ? 1 : 0, transform: stage >= 4 ? 'translateY(0)' : 'translateY(20px)', transition: 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)'
                             }}>
-                                <h4 style={{ margin: '0 0 1rem 0', color: '#e74c3c', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px' }}>
-                                    4. What Conflicts
-                                </h4>
-                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                                    <span style={{ color: 'var(--accent-red)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
+                                        <XCircle size={15} color="var(--accent-red)" /> 4. What Conflicts
+                                    </span>
+                                    <span className="rt-badge rt-badge-danger">{invResult.contradictionsDetected?.length || 0} CONFLICTS</span>
+                                </div>
+                                <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                                     {invResult.contradictionsDetected?.length > 0 ? invResult.contradictionsDetected.map((ev, i) => (
-                                        <li key={i} style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem', color: '#ccc' }}><XCircle size={14} color="#e74c3c" style={{ marginTop: '2px', flexShrink: 0 }} /> {ev}</li>
-                                    )) : <li style={{ fontSize: '0.9rem', color: '#747d8c' }}>No contradictions detected.</li>}
+                                        <li key={i} style={{ fontSize: '0.875rem', display: 'flex', alignItems: 'flex-start', gap: '0.6rem', color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                                            <XCircle size={14} color="var(--accent-red)" style={{ marginTop: '3px', flexShrink: 0 }} />
+                                            <span>{ev}</span>
+                                        </li>
+                                    )) : <li style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>No contradictions detected.</li>}
                                 </ul>
                             </div>
                         </div>
@@ -286,42 +318,54 @@ export default function FinalWorkspace({ dispute, payload, onReassess }) {
                     <AnimatePresence>
                         {stage >= 6 && decisionState === 'PENDING' && (
                             <motion.div 
-                                initial={{ opacity: 0, scale: 0.9, y: 50 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.9, y: -50 }}
-                                transition={{ type: 'spring', damping: 15, stiffness: 100 }}
+                                initial={{ opacity: 0, scale: 0.96, y: 30 }} animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.96, y: -30 }}
+                                transition={{ type: 'spring', damping: 20, stiffness: 120 }}
+                                className="rt-card"
                                 style={{ 
-                                    background: `linear-gradient(135deg, rgba(20, 18, 25, 0.95) 0%, rgba(15, 15, 18, 0.98) 100%)`, 
-                                    padding: '3rem 2rem', borderRadius: '12px', border: ai.status === 'FAILED' ? `2px solid #747d8c` : `2px solid ${accentColor}`,
-                                    boxShadow: ai.status === 'FAILED' ? `0 20px 50px -10px rgba(116,125,140,0.4), inset 0 0 20px rgba(116,125,140,0.1)` : `0 20px 50px -10px ${accentColor}40, inset 0 0 20px ${accentColor}10`,
+                                    padding: '2.5rem',
+                                    border: ai.status === 'FAILED' ? `1px solid var(--border-subtle)` : `1px solid ${accentColor}`,
+                                    boxShadow: ai.status === 'FAILED' ? `none` : `0 20px 40px -15px ${accentColor}30`,
                                     display: 'flex', flexDirection: 'column', gap: '2rem', zIndex: 20, marginTop: '1rem'
                                 }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
                                     {ai.status === 'FAILED' ? (
                                         <div>
-                                            <div style={{ color: '#747d8c', textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.9rem', marginBottom: '0.5rem' }}>6. Final Recommendation</div>
-                                            <div style={{ fontSize: '2rem', fontWeight: 300, color: '#f1f2f6', letterSpacing: '1px' }}>Manual Decision Required</div>
+                                            <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '0.5rem', fontWeight: 600 }}>6. Final Recommendation</div>
+                                            <div style={{ fontSize: '1.75rem', fontWeight: 600, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>Manual Decision Required</div>
                                         </div>
                                     ) : (
                                         <>
                                             <div>
-                                                <div style={{ color: '#747d8c', textTransform: 'uppercase', letterSpacing: '3px', fontSize: '0.9rem', marginBottom: '0.5rem' }}>6. Final Recommendation</div>
-                                                <div style={{ fontSize: '4rem', fontWeight: 200, color: accentColor, letterSpacing: '3px', textShadow: `0 0 20px ${accentColor}80` }}>{ai.recommendedDecision}</div>
+                                                <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '0.5rem', fontWeight: 600 }}>6. Final Recommendation</div>
+                                                <div style={{ fontSize: '3.5rem', fontWeight: 800, color: accentColor, letterSpacing: '-0.03em', lineHeight: 1 }}>{ai.recommendedDecision}</div>
                                             </div>
                                             <div style={{ textAlign: 'right' }}>
-                                                <div style={{ color: '#747d8c', textTransform: 'uppercase', letterSpacing: '2px', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Confidence</div>
-                                                <div style={{ fontSize: '3rem', fontWeight: 300, color: '#f1f2f6' }}>{ai.confidenceScore}%</div>
+                                                <div style={{ color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', marginBottom: '0.5rem', fontWeight: 600 }}>AI Confidence</div>
+                                                <div style={{ fontSize: '2.5rem', fontWeight: 700, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{ai.confidenceScore}%</div>
                                             </div>
                                         </>
                                     )}
                                 </div>
                                 
-                                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '2rem' }}>
-                                    <h4 style={{ margin: '0 0 1rem 0', color: ai.status === 'FAILED' ? '#f1f2f6' : '#a55eea', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '2px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><ShieldCheck size={18}/> Authorize Action</h4>
-                                    <div style={{ display: 'flex', gap: '1rem' }}>
-                                        <button onClick={() => handleDecision('CONTEST')} style={btnStyle('#2ecc71')}>CONTEST</button>
-                                        <button onClick={() => handleDecision('CONCEDE')} style={btnStyle('#e74c3c')}>CONCEDE</button>
-                                        <button onClick={() => handleDecision('REQUEST_MORE_EVIDENCE')} style={btnStyle('#f39c12')}>REQUEST MORE EVIDENCE</button>
+                                <div style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '2rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                                        <h4 style={{ margin: 0, color: 'var(--text-main)', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.08em', display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600 }}>
+                                            <ShieldCheck size={18} color="var(--accent-violet)" /> Authorize Merchant Action
+                                        </h4>
+                                        <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Action commits immutable audit record</span>
+                                    </div>
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+                                        <button onClick={() => handleDecision('CONTEST')} className="rt-btn-primary" style={{ background: 'var(--accent-green)', borderColor: 'transparent', color: '#000', justifyContent: 'center', padding: '1rem', fontWeight: 700, letterSpacing: '0.05em' }}>
+                                            CONTEST CASE
+                                        </button>
+                                        <button onClick={() => handleDecision('CONCEDE')} className="rt-btn-secondary" style={{ color: 'var(--accent-red)', borderColor: 'rgba(239, 68, 68, 0.3)', justifyContent: 'center', padding: '1rem', fontWeight: 600, letterSpacing: '0.05em' }}>
+                                            CONCEDE (REFUND)
+                                        </button>
+                                        <button onClick={() => handleDecision('REQUEST_MORE_EVIDENCE')} className="rt-btn-secondary" style={{ color: 'var(--accent-amber)', borderColor: 'rgba(245, 158, 11, 0.3)', justifyContent: 'center', padding: '1rem', fontWeight: 600, letterSpacing: '0.05em' }}>
+                                            REQUEST EVIDENCE
+                                        </button>
                                     </div>
                                 </div>
                             </motion.div>
@@ -330,38 +374,44 @@ export default function FinalWorkspace({ dispute, payload, onReassess }) {
                         {decisionState === 'SUBMITTING' && (
                             <motion.div 
                                 initial={{ opacity: 0 }} animate={{ opacity: 1 }}
-                                style={{ padding: '4rem', textAlign: 'center', background: 'rgba(20, 18, 25, 0.9)', borderRadius: '12px', border: '1px solid #a55eea', marginTop: '1rem' }}
+                                className="rt-card"
+                                style={{ padding: '4rem 2rem', textAlign: 'center', marginTop: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}
                             >
-                                <Loader2 size={48} color="#a55eea" style={{ animation: 'spin 2s linear infinite', margin: '0 auto 1rem auto' }} />
-                                <h3 style={{ fontWeight: 300, color: '#f1f2f6', letterSpacing: '2px' }}>Committing Merchant Decision...</h3>
+                                <Loader2 size={40} color="var(--accent-violet)" style={{ animation: 'spin 1.5s linear infinite' }} />
+                                <h3 style={{ fontWeight: 600, color: 'var(--text-main)', letterSpacing: '-0.01em', margin: 0, fontSize: '1.25rem' }}>Committing Merchant Decision...</h3>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>Writing cryptographic audit record to local ledger</p>
                             </motion.div>
                         )}
 
                         {decisionState === 'CONCLUDED' && (
                             <motion.div 
-                                initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-                                style={{ background: '#0f0f12', padding: '3rem', borderRadius: '12px', border: '1px solid #2ecc71', boxShadow: '0 0 30px rgba(46, 204, 113, 0.1)', marginTop: '1rem' }}
+                                initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }}
+                                className="rt-card"
+                                style={{ padding: '2.5rem', border: '1px solid var(--accent-green)', boxShadow: '0 0 30px rgba(16, 185, 129, 0.1)', marginTop: '1rem' }}
                             >
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
-                                    <div style={{ width: '60px', height: '60px', borderRadius: '50%', background: 'rgba(46, 204, 113, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #2ecc71' }}>
-                                        <CheckCircle color="#2ecc71" size={32} />
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', marginBottom: '2rem' }}>
+                                    <div style={{ width: '56px', height: '56px', borderRadius: '12px', background: 'rgba(16, 185, 129, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--accent-green)' }}>
+                                        <CheckCircle color="var(--accent-green)" size={28} />
                                     </div>
                                     <div>
-                                        <h2 style={{ margin: '0 0 0.2rem 0', fontWeight: 300, color: '#f1f2f6', fontSize: '2rem' }}>Decision Locked: {finalDecision}</h2>
-                                        <p style={{ margin: 0, color: '#747d8c', letterSpacing: '1px' }}>Action successfully written to immutable ledger.</p>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.25rem' }}>
+                                            <h2 style={{ margin: 0, fontWeight: 700, color: 'var(--text-main)', fontSize: '1.5rem', letterSpacing: '-0.02em' }}>Decision Locked: {finalDecision}</h2>
+                                            <span className="rt-badge rt-badge-success">COMMITTED</span>
+                                        </div>
+                                        <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.875rem' }}>Action successfully written to immutable audit ledger.</p>
                                     </div>
                                 </div>
                                 
-                                <div style={{ background: '#050505', padding: '1.5rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', fontFamily: 'monospace' }}>
-                                    <h4 style={{ margin: '0 0 1rem 0', color: '#a55eea', display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Activity size={16}/> Audit Trail</h4>
-                                    {auditTrail.map((audit, i) => (
-                                        <div key={audit.id} style={{ marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '1rem' }}>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#747d8c', fontSize: '0.8rem', marginBottom: '0.5rem' }}>
+                                <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1.5rem', borderRadius: '8px', border: '1px solid var(--border-subtle)', fontFamily: 'var(--font-mono)' }}>
+                                    <h4 style={{ margin: '0 0 1rem 0', color: 'var(--accent-violet)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', textTransform: 'uppercase', letterSpacing: '0.08em' }}><Activity size={14}/> Audit Trail Snapshot</h4>
+                                    {auditTrail.map((audit) => (
+                                        <div key={audit.id} style={{ marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '1rem' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', fontSize: '0.75rem', marginBottom: '0.5rem' }}>
                                                 <span>[{new Date(audit.timestamp).toISOString()}]</span>
-                                                <span style={{ color: '#3498db' }}>{audit.performedBy}</span>
+                                                <span style={{ color: 'var(--accent-violet)' }}>{audit.performedBy}</span>
                                             </div>
-                                            <div style={{ color: '#2ecc71', fontWeight: 'bold', marginBottom: '0.5rem' }}>{audit.action}</div>
-                                            <div style={{ color: '#ccc', fontSize: '0.85rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+                                            <div style={{ color: 'var(--accent-green)', fontWeight: 600, marginBottom: '0.35rem', fontSize: '0.85rem' }}>{audit.action}</div>
+                                            <div style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                                                 {audit.details}
                                             </div>
                                         </div>

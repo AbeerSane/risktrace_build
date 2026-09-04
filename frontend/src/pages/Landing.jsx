@@ -1,415 +1,898 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
+import React, { useRef, useState, useEffect } from 'react';
+import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { Database, ShieldAlert, Zap, Server, ChevronRight } from 'lucide-react';
+import { 
+    Database, ShieldAlert, Zap, Server, ChevronRight, ArrowRight, 
+    ShieldCheck, Cpu, AlertTriangle, FileText, CheckCircle2, TrendingUp, 
+    Network, Crosshair, Sparkles, CreditCard, ShoppingBag, Truck, Smartphone,
+    User, HelpCircle, Lock, Layers
+} from 'lucide-react';
+
+const SCENES = [
+    {
+        id: 'hero',
+        eyebrow: 'AUTONOMOUS INVESTIGATION PLATFORM',
+        eyebrowColor: '#8B5CF6',
+        title: 'FOLLOW THE MONEY.',
+        subtitle: 'Every payment leaves evidence. Trace and defend chargebacks automatically.',
+        hasCta: true
+    },
+    {
+        id: 'problem',
+        eyebrow: 'FRAGMENTED EVIDENCE VECTORS',
+        eyebrowColor: '#EF4444',
+        title: 'TOO MANY SIGNALS.',
+        subtitle: 'One dispute can span payment, order, shipment, device, and customer data.',
+        hasCta: false
+    },
+    {
+        id: 'deconstruction',
+        eyebrow: 'TRANSACTION DECONSTRUCTION',
+        eyebrowColor: '#8B5CF6',
+        title: 'PAYMENT DECONSTRUCTED.',
+        subtitle: 'Isolating network telemetry across bank, cardholder, and fulfillment nodes.',
+        hasCta: false
+    },
+    {
+        id: 'anomaly',
+        eyebrow: 'FORENSIC VAULT CORRELATION',
+        eyebrowColor: '#EF4444',
+        title: 'ANOMALY DETECTED.',
+        subtitle: 'Patterns emerge when disputes are viewed together across evidence vaults.',
+        hasCta: false
+    },
+    {
+        id: 'reasoning',
+        eyebrow: 'NEURAL INVESTIGATION ENGINE',
+        eyebrowColor: '#10B981',
+        title: 'AI REASONING.',
+        subtitle: 'Contradictions isolated. Autonomous case strength assessed with verifiable facts.',
+        hasCta: false
+    },
+    {
+        id: 'action',
+        eyebrow: 'MERCHANT DECISION LAYER',
+        eyebrowColor: '#F59E0B',
+        title: 'EVIDENCE → ACTION.',
+        subtitle: 'Transform verifiable evidence into high-confidence dispute wins and merchant control.',
+        hasCta: false
+    },
+    {
+        id: 'pattern',
+        eyebrow: 'CROSS-DISPUTE RADAR',
+        eyebrowColor: '#8B5CF6',
+        title: 'SEE THE PATTERN.',
+        subtitle: 'Multi-dispute correlation exposes coordinated syndicate fraud before chargebacks land.',
+        hasCta: false
+    },
+    {
+        id: 'resolution',
+        eyebrow: 'AUTONOMOUS DEFENSE',
+        eyebrowColor: '#10B981',
+        title: 'TRACE THE STORY.',
+        subtitle: 'Investigate disputes with evidence, intelligence, and control.',
+        hasCta: false
+    }
+];
 
 export default function Landing() {
     const containerRef = useRef(null);
-    const { scrollYProgress } = useScroll({ target: containerRef });
+    const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start start", "end end"] });
     const navigate = useNavigate();
     const shouldReduceMotion = useReducedMotion();
 
-    // Graphic Animations (Central transaction node, nodes, lines, vault)
-    const txScaleRaw = useTransform(scrollYProgress, [0, 0.2, 0.70, 0.75], [1, 1.4, 1.4, 0.8]);
-    const txScale = shouldReduceMotion ? 1 : txScaleRaw;
-    const txYRaw = useTransform(scrollYProgress, [0, 0.2, 0.70, 0.75], [0, 40, 40, -80]);
-    const txY = shouldReduceMotion ? 0 : txYRaw;
-    const txOpacity = useTransform(scrollYProgress, [0, 0.70, 0.75], [1, 1, 0]);
+    // Active discrete scene state (0 to 7) - Guarantees ZERO simultaneous text overlap
+    const [activeScene, setActiveScene] = useState(0);
 
-    // Payment sub-nodes (Bank & User)
-    const paymentGraphicsOpacity = useTransform(scrollYProgress, [0.15, 0.22, 0.70, 0.75], [0, 1, 1, 0]);
-    const paymentYRaw = useTransform(scrollYProgress, [0.15, 0.22], [40, 0]);
-    const paymentY = shouldReduceMotion ? 0 : paymentYRaw;
+    useMotionValueEvent(scrollYProgress, "change", (latest) => {
+        let scene = 0;
+        if (latest < 0.125) scene = 0;
+        else if (latest < 0.25) scene = 1;
+        else if (latest < 0.375) scene = 2;
+        else if (latest < 0.50) scene = 3;
+        else if (latest < 0.625) scene = 4;
+        else if (latest < 0.75) scene = 5;
+        else if (latest < 0.875) scene = 6;
+        else scene = 7;
 
-    // Evidence Vault & Anomaly graphics
-    const evidenceGraphicsOpacity = useTransform(scrollYProgress, [0.35, 0.42, 0.70, 0.75], [0, 1, 1, 0]);
-    const evidenceScaleRaw = useTransform(scrollYProgress, [0.35, 0.42], [0.85, 1]);
-    const evidenceScale = shouldReduceMotion ? 1 : evidenceScaleRaw;
+        if (scene !== activeScene) {
+            setActiveScene(scene);
+        }
+    });
 
-    // AI Reasoning card graphic
-    const aiGraphicsOpacity = useTransform(scrollYProgress, [0.55, 0.62, 0.70, 0.75], [0, 1, 1, 0]);
+    // Subtle interactive mouse tracking for ambient depth
+    const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            const x = (e.clientX / window.innerWidth - 0.5) * 20;
+            const y = (e.clientY / window.innerHeight - 0.5) * 20;
+            setMousePos({ x, y });
+        };
+        window.addEventListener('mousemove', handleMouseMove);
+        return () => window.removeEventListener('mousemove', handleMouseMove);
+    }, []);
 
-    // Mutually Exclusive Scroll Ranges for Top Typography (Strict ZERO Overlap)
-    // Stage 0: 0.00 -> 0.15
-    const s0Opacity = useTransform(scrollYProgress, [0.00, 0.10, 0.15], [1, 1, 0]);
-    const s0Y = useTransform(scrollYProgress, [0.00, 0.15], [0, -25]);
-
-    // Stage 1: 0.15 -> 0.35
-    const s1Opacity = useTransform(scrollYProgress, [0.15, 0.20, 0.30, 0.35], [0, 1, 1, 0]);
-    const s1Y = useTransform(scrollYProgress, [0.15, 0.20, 0.30, 0.35], [25, 0, 0, -25]);
-
-    // Stage 2: 0.35 -> 0.55
-    const s2Opacity = useTransform(scrollYProgress, [0.35, 0.40, 0.50, 0.55], [0, 1, 1, 0]);
-    const s2Y = useTransform(scrollYProgress, [0.35, 0.40, 0.50, 0.55], [25, 0, 0, -25]);
-
-    // Stage 3: 0.55 -> 0.75
-    const s3Opacity = useTransform(scrollYProgress, [0.55, 0.60, 0.70, 0.75], [0, 1, 1, 0]);
-    const s3Y = useTransform(scrollYProgress, [0.55, 0.60, 0.70, 0.75], [25, 0, 0, -25]);
-
-    // Stage 4 (Final Decision Block): 0.75 -> 1.00
-    const s4Opacity = useTransform(scrollYProgress, [0.75, 0.82, 1.00], [0, 1, 1]);
-    const s4Y = useTransform(scrollYProgress, [0.75, 0.82], [35, 0]);
-    const s4Scale = useTransform(scrollYProgress, [0.75, 0.82], [0.95, 1]);
-
-    // Scroll instruction indicator (fades out immediately when scrolling starts)
-    const scrollPromptOpacity = useTransform(scrollYProgress, [0.00, 0.03], [1, 0]);
-
-    // Smooth background color shifting
-    const bgColors = useTransform(scrollYProgress,
-        [0, 0.4, 0.7, 1],
-        ['#0a0a0c', '#0f0c1b', '#0c1214', '#08080a']
+    // Interactive Navbar scroll styling
+    const navBg = useTransform(
+        scrollYProgress,
+        [0, 0.04],
+        ['rgba(8, 8, 10, 0.3)', 'rgba(15, 14, 23, 0.92)']
+    );
+    const navBorder = useTransform(
+        scrollYProgress,
+        [0, 0.04],
+        ['rgba(255, 255, 255, 0.06)', 'rgba(255, 255, 255, 0.12)']
     );
 
+    // Dynamic background illumination based on active scene
+    const getEnvOpacity = () => {
+        if (activeScene === 0) return 0.75; // Strong presence at Hero
+        if (activeScene === 1) return 0.80; // High presence at Problem (illuminates chaotic thought bubble)
+        if (activeScene >= 2 && activeScene <= 4) return 0.45; // Controlled background for dense telemetry
+        if (activeScene === 5) return 0.60; // Action layer
+        if (activeScene === 6) return 0.55; // Pattern intelligence
+        return 0.80; // Full resolution at final scene
+    };
+
+    // Scroll instruction indicator (fades out immediately when scrolling starts)
+    const scrollPromptOpacity = useTransform(scrollYProgress, [0.00, 0.025], [1, 0]);
+
+    const scrollToStage = (progressVal) => {
+        if (!containerRef.current) return;
+        const targetScroll = progressVal * (containerRef.current.scrollHeight - window.innerHeight);
+        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+    };
+
+    const currentData = SCENES[activeScene];
+
     return (
-        <motion.div 
+        <div 
             ref={containerRef} 
             style={{ 
-                height: '500vh',
-                backgroundColor: bgColors,
+                height: '800vh',
+                backgroundColor: '#08080A',
                 color: '#fff',
-                fontFamily: '"Inter", system-ui, -apple-system, sans-serif'
+                position: 'relative'
             }}
         >
-            {/* Fixed Canvas Container */}
-            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-                
-                {/* Header */}
-                <header style={{ 
+            {/* ==================================================== */}
+            {/* LAYER 1: FULL-SCREEN ILLUSTRATED WORKSPACE CANVAS    */}
+            {/* Covers 100% of viewport - Never relegated to corner   */}
+            {/* ==================================================== */}
+            <div 
+                style={{ 
+                    position: 'fixed', 
+                    top: 0, 
+                    left: 0, 
+                    width: '100vw', 
+                    height: '100vh', 
+                    overflow: 'hidden', 
+                    zIndex: 1, 
+                    pointerEvents: 'none' 
+                }}
+            >
+                {/* Full-bleed background image with responsive coverage */}
+                <motion.img 
+                    src="/assets/risktrace-workspace.png" 
+                    alt="RiskTrace Investigation Environment" 
+                    animate={{ 
+                        opacity: getEnvOpacity(),
+                        x: shouldReduceMotion ? 0 : mousePos.x * 0.35,
+                        y: shouldReduceMotion ? 0 : mousePos.y * 0.35
+                    }}
+                    transition={{ duration: 0.4, ease: 'easeOut' }}
+                    style={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover',
+                        objectPosition: 'center 42%',
+                        filter: 'brightness(0.85) contrast(1.10)'
+                    }}
+                />
+
+                {/* Left Thought Bubble Atmosphere (Merchant Problem / Chaos) */}
+                <motion.div 
+                    animate={{ opacity: activeScene === 1 ? 0.9 : activeScene === 0 ? 0.3 : 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{
+                        position: 'absolute',
+                        left: '10%',
+                        top: '12%',
+                        width: 'clamp(280px, 30vw, 480px)',
+                        height: 'clamp(280px, 30vw, 480px)',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(239, 68, 68, 0.35) 0%, rgba(239, 68, 68, 0.08) 50%, transparent 75%)',
+                        filter: 'blur(45px)',
+                        pointerEvents: 'none'
+                    }}
+                />
+
+                {/* Right Thought Bubble Atmosphere (RiskTrace Shield / Resolution) */}
+                <motion.div 
+                    animate={{ opacity: activeScene >= 5 ? 0.9 : activeScene === 0 ? 0.35 : 0 }}
+                    transition={{ duration: 0.5 }}
+                    style={{
+                        position: 'absolute',
+                        right: '10%',
+                        top: '12%',
+                        width: 'clamp(280px, 30vw, 480px)',
+                        height: 'clamp(280px, 30vw, 480px)',
+                        borderRadius: '50%',
+                        background: 'radial-gradient(circle, rgba(16, 185, 129, 0.38) 0%, rgba(16, 185, 129, 0.08) 50%, transparent 75%)',
+                        filter: 'blur(45px)',
+                        pointerEvents: 'none'
+                    }}
+                />
+
+                {/* Atmospheric Vignette & Contrast Control (Ensures typography pop) */}
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'linear-gradient(to bottom, rgba(8, 8, 10, 0.72) 0%, rgba(8, 8, 10, 0.20) 35%, rgba(8, 8, 10, 0.45) 70%, rgba(8, 8, 10, 0.88) 100%)',
+                    pointerEvents: 'none'
+                }} />
+
+                {/* Radial edge frame vignette */}
+                <div style={{
+                    position: 'absolute',
+                    inset: 0,
+                    background: 'radial-gradient(circle at 50% 50%, transparent 45%, rgba(8, 8, 10, 0.7) 95%)',
+                    pointerEvents: 'none'
+                }} />
+
+                {/* Subtle Grid Overlay */}
+                <div style={{ 
                     position: 'absolute', 
+                    inset: 0, 
+                    backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px)', 
+                    backgroundSize: '48px 48px', 
+                    maskImage: shouldReduceMotion ? 'none' : 'radial-gradient(circle at center, black 40%, transparent 85%)',
+                    pointerEvents: 'none'
+                }} />
+            </div>
+
+            {/* ==================================================== */}
+            {/* LAYER 5: MINIMALIST CINEMATIC NAVBAR                 */}
+            {/* ==================================================== */}
+            <motion.header 
+                style={{ 
+                    position: 'fixed', 
                     top: 0, 
                     left: 0, 
                     width: '100%', 
-                    padding: '1.75rem 3.5rem', 
+                    padding: '1.25rem 4vw', 
                     display: 'flex', 
-                    justify: 'space-between', 
+                    justifyContent: 'space-between', 
                     alignItems: 'center', 
                     zIndex: 100, 
-                    pointerEvents: 'auto' 
-                }}>
-                    <div style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '3px', color: '#ffffff' }}>
-                        RISKTRACE
+                    pointerEvents: 'auto',
+                    backgroundColor: navBg,
+                    borderBottom: '1px solid',
+                    borderColor: navBorder,
+                    backdropFilter: 'blur(16px)',
+                    transition: 'border-color 0.2s ease, background-color 0.2s ease'
+                }}
+            >
+                {/* Left Wordmark */}
+                <div 
+                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', cursor: 'pointer' }}
+                >
+                    <div style={{
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '6px',
+                        background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        boxShadow: '0 0 15px rgba(139, 92, 246, 0.4)'
+                    }}>
+                        <ShieldCheck size={16} color="#fff" />
                     </div>
+                    <span style={{ fontSize: '1.15rem', fontWeight: 700, letterSpacing: '2px', color: '#ffffff' }}>
+                        RISKTRACE
+                    </span>
+                </div>
+
+                {/* Middle Nav Links */}
+                <nav style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                    {[
+                        { label: 'The Problem', stage: 0.18, sceneIdx: 1 },
+                        { label: 'Deconstruction', stage: 0.31, sceneIdx: 2 },
+                        { label: 'AI Reasoning', stage: 0.56, sceneIdx: 4 },
+                        { label: 'Action', stage: 0.68, sceneIdx: 5 },
+                        { label: 'Pattern Intel', stage: 0.81, sceneIdx: 6 }
+                    ].map((item, idx) => (
+                        <button 
+                            key={idx}
+                            onClick={() => scrollToStage(item.stage)} 
+                            style={{ 
+                                background: 'none', 
+                                border: 'none', 
+                                color: activeScene === item.sceneIdx ? '#FFFFFF' : '#94A3B8', 
+                                fontSize: '0.88rem', 
+                                fontWeight: activeScene === item.sceneIdx ? 600 : 400,
+                                cursor: 'pointer', 
+                                transition: 'color 0.2s',
+                                position: 'relative'
+                            }}
+                            onMouseOver={e => e.currentTarget.style.color = '#fff'}
+                            onMouseOut={e => e.currentTarget.style.color = activeScene === item.sceneIdx ? '#FFFFFF' : '#94A3B8'}
+                        >
+                            {item.label}
+                            {activeScene === item.sceneIdx && (
+                                <motion.div 
+                                    layoutId="navDot"
+                                    style={{
+                                        position: 'absolute',
+                                        bottom: '-6px',
+                                        left: '50%',
+                                        transform: 'translateX(-50%)',
+                                        width: '4px',
+                                        height: '4px',
+                                        borderRadius: '50%',
+                                        background: '#8B5CF6'
+                                    }}
+                                />
+                            )}
+                        </button>
+                    ))}
+                </nav>
+
+                {/* Right Action Group */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                     <button 
                         onClick={() => navigate('/login')} 
                         style={{ 
                             background: 'transparent', 
-                            border: '1px solid rgba(255,255,255,0.25)', 
-                            padding: '0.6rem 1.4rem', 
-                            color: '#fff', 
-                            fontSize: '0.9rem',
+                            border: '1px solid rgba(255,255,255,0.14)', 
+                            padding: '0.55rem 1.25rem', 
+                            color: '#F8FAFC', 
+                            fontSize: '0.88rem',
                             fontWeight: 500,
-                            letterSpacing: '1px',
                             borderRadius: '6px', 
                             cursor: 'pointer', 
                             transition: 'all 0.2s ease' 
                         }}
+                        onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.35)'; e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.06)'; }}
+                        onMouseOut={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.14)'; e.currentTarget.style.backgroundColor = 'transparent'; }}
                     >
                         Sign In
                     </button>
-                </header>
-
-                {/* Ambient Grid Overlay */}
-                <div style={{ 
-                    position: 'absolute', 
-                    top: 0, left: 0, right: 0, bottom: 0, 
-                    backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px)', 
-                    backgroundSize: '50px 50px', 
-                    zIndex: 0, 
-                    maskImage: shouldReduceMotion ? 'none' : 'radial-gradient(circle at center, black, transparent 80%)' 
-                }} />
-
-                {/* Main Viewport Workspace */}
-                <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', zIndex: 10 }}>
-
-                    {/* TOP TYPOGRAPHY HEADER (Razorpay Editorial Style: Eyebrow -> Main Title -> Subtitle) */}
-                    <div style={{
-                        position: 'absolute',
-                        top: '110px',
-                        left: '50%',
-                        transform: 'translateX(-50%)',
-                        width: '90%',
-                        maxWidth: '900px',
-                        textAlign: 'center',
-                        zIndex: 25,
-                        pointerEvents: 'none'
-                    }}>
-                        {/* STAGE 0: HERO ("FOLLOW THE MONEY.") */}
-                        <motion.div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            opacity: s0Opacity,
-                            y: shouldReduceMotion ? 0 : s0Y,
-                            willChange: 'opacity, transform'
-                        }}>
-                            <span style={{ fontSize: 'clamp(0.8rem, 1.2vw, 0.95rem)', letterSpacing: '3px', fontWeight: 600, color: '#a55eea', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-                                DISPUTE INTELLIGENCE ENGINE
-                            </span>
-                            <h1 style={{ fontSize: 'clamp(2.5rem, 4.8vw, 4.2rem)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: '1.12', color: '#ffffff', margin: '0 0 0.75rem 0', textShadow: '0 0 30px rgba(255,255,255,0.15)' }}>
-                                FOLLOW THE MONEY.
-                            </h1>
-                            <p style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)', fontWeight: 400, color: 'rgba(255, 255, 255, 0.75)', lineHeight: '1.5', maxWidth: '600px', margin: 0 }}>
-                                Every payment leaves evidence. Trace anomalies automatically.
-                            </p>
-                        </motion.div>
-
-                        {/* STAGE 1: PAYMENT DECONSTRUCTED */}
-                        <motion.div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            opacity: s1Opacity,
-                            y: shouldReduceMotion ? 0 : s1Y,
-                            willChange: 'opacity, transform'
-                        }}>
-                            <span style={{ fontSize: 'clamp(0.8rem, 1.2vw, 0.95rem)', letterSpacing: '3px', fontWeight: 600, color: '#a55eea', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-                                TRANSACTION DECONSTRUCTION
-                            </span>
-                            <h2 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.4rem)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: '1.12', color: '#ffffff', margin: '0 0 0.75rem 0' }}>
-                                PAYMENT DECONSTRUCTED.
-                            </h2>
-                            <p style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)', fontWeight: 400, color: 'rgba(255, 255, 255, 0.75)', lineHeight: '1.5', maxWidth: '600px', margin: 0 }}>
-                                Isolating network signals across bank, user, and merchant nodes.
-                            </p>
-                        </motion.div>
-
-                        {/* STAGE 2: ANOMALY DETECTED */}
-                        <motion.div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            opacity: s2Opacity,
-                            y: shouldReduceMotion ? 0 : s2Y,
-                            willChange: 'opacity, transform'
-                        }}>
-                            <span style={{ fontSize: 'clamp(0.8rem, 1.2vw, 0.95rem)', letterSpacing: '3px', fontWeight: 600, color: '#e74c3c', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-                                BEHAVIOR & VAULT ANALYSIS
-                            </span>
-                            <h2 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.4rem)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: '1.12', color: '#e74c3c', margin: '0 0 0.75rem 0' }}>
-                                ANOMALY DETECTED.
-                            </h2>
-                            <p style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)', fontWeight: 400, color: 'rgba(255, 255, 255, 0.75)', lineHeight: '1.5', maxWidth: '600px', margin: 0 }}>
-                                High velocity pattern flagged inside the evidence vault.
-                            </p>
-                        </motion.div>
-
-                        {/* STAGE 3: AI REASONING */}
-                        <motion.div style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            width: '100%',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            opacity: s3Opacity,
-                            y: shouldReduceMotion ? 0 : s3Y,
-                            willChange: 'opacity, transform'
-                        }}>
-                            <span style={{ fontSize: 'clamp(0.8rem, 1.2vw, 0.95rem)', letterSpacing: '3px', fontWeight: 600, color: '#2ecc71', textTransform: 'uppercase', marginBottom: '0.6rem' }}>
-                                NEURAL RISK ASSESSMENT
-                            </span>
-                            <h2 style={{ fontSize: 'clamp(2.2rem, 4vw, 3.4rem)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: '1.12', color: '#2ecc71', margin: '0 0 0.75rem 0' }}>
-                                AI REASONING.
-                            </h2>
-                            <p style={{ fontSize: 'clamp(0.95rem, 1.4vw, 1.15rem)', fontWeight: 400, color: 'rgba(255, 255, 255, 0.75)', lineHeight: '1.5', maxWidth: '600px', margin: 0 }}>
-                                Device mismatch and unverified shipping route detected.
-                            </p>
-                        </motion.div>
-                    </div>
-
-                    {/* CENTRAL GRAPHIC NODE (TXN Server) */}
-                    <motion.div style={{ 
-                        position: 'absolute', 
-                        top: '50%',
-                        left: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        scale: txScale, 
-                        y: txY, 
-                        opacity: txOpacity, 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center', 
-                        zIndex: 20, 
-                        willChange: 'transform, opacity' 
-                    }}>
-                        <div style={{ 
-                            width: '76px', 
-                            height: '76px', 
-                            borderRadius: '50%', 
-                            background: 'rgba(165, 94, 234, 0.1)', 
-                            border: '2px solid #a55eea', 
-                            display: 'flex', 
-                            alignItems: 'center', 
-                            justifyContent: 'center', 
-                            boxShadow: '0 0 40px rgba(165, 94, 234, 0.3)' 
-                        }}>
-                            <Server size={30} color="#a55eea" />
-                        </div>
-                        <div style={{ marginTop: '0.75rem', color: '#a55eea', fontWeight: 600, letterSpacing: '2px', fontSize: '0.75rem' }}>
-                            TXN_94827
-                        </div>
-                    </motion.div>
-
-                    {/* STAGE 1 GRAPHICS: BANK & USER SUB-NODES */}
-                    <motion.div style={{ position: 'absolute', width: '100%', height: '100%', opacity: paymentGraphicsOpacity, y: paymentY, zIndex: 15, willChange: 'opacity, transform' }}>
-                        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                            <line x1="50%" y1="50%" x2="35%" y2="65%" stroke="#a55eea" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
-                            <line x1="50%" y1="50%" x2="65%" y2="65%" stroke="#a55eea" strokeWidth="1" strokeDasharray="4 4" opacity="0.5" />
-                        </svg>
-                        
-                        <div style={{ position: 'absolute', left: '35%', top: '65%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ fontSize: '0.65rem', color: '#ccc', letterSpacing: '1px' }}>BANK</span>
-                            </div>
-                        </div>
-
-                        <div style={{ position: 'absolute', left: '65%', top: '65%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <span style={{ fontSize: '0.65rem', color: '#ccc', letterSpacing: '1px' }}>USER</span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* STAGE 2 GRAPHICS: EVIDENCE VAULT & ANOMALY DOTS */}
-                    <motion.div style={{ position: 'absolute', width: '100%', height: '100%', opacity: evidenceGraphicsOpacity, scale: evidenceScale, zIndex: 16, willChange: 'opacity, transform' }}>
-                        <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-                            <line x1="35%" y1="65%" x2="50%" y2="78%" stroke="#e74c3c" strokeWidth="2" opacity="0.8" />
-                            <line x1="65%" y1="65%" x2="50%" y2="78%" stroke="#e74c3c" strokeWidth="2" opacity="0.8" />
-                        </svg>
-
-                        <div style={{ position: 'absolute', left: '35%', top: '65%', transform: 'translate(-50%, -50%)' }}>
-                            <div style={{ position: 'absolute', width: '16px', height: '16px', borderRadius: '50%', background: '#e74c3c', right: '-4px', top: '-4px', boxShadow: '0 0 12px #e74c3c' }} />
-                        </div>
-                        <div style={{ position: 'absolute', left: '65%', top: '65%', transform: 'translate(-50%, -50%)' }}>
-                            <div style={{ position: 'absolute', width: '16px', height: '16px', borderRadius: '50%', background: '#e74c3c', right: '-4px', top: '-4px', boxShadow: '0 0 12px #e74c3c' }} />
-                        </div>
-
-                        <div style={{ position: 'absolute', left: '50%', top: '78%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <div style={{ width: '64px', height: '64px', borderRadius: '8px', background: 'rgba(231, 76, 60, 0.1)', border: '2px solid #e74c3c', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 25px rgba(231, 76, 60, 0.3)' }}>
-                                <Database size={26} color="#e74c3c" />
-                            </div>
-                            <div style={{ marginTop: '0.5rem', color: '#e74c3c', fontWeight: 600, letterSpacing: '2px', fontSize: '0.75rem' }}>EVIDENCE VAULT</div>
-                        </div>
-                    </motion.div>
-
-                    {/* STAGE 3 GRAPHIC CARD: AI REASONING BREAKDOWN */}
-                    <motion.div style={{ position: 'absolute', width: '100%', height: '100%', opacity: aiGraphicsOpacity, zIndex: 17, willChange: 'opacity', pointerEvents: 'none' }}>
-                        <div style={{ 
-                            position: 'absolute', 
-                            left: '12%', 
-                            top: '50%', 
-                            transform: 'translateY(-50%)', 
-                            width: 'clamp(260px, 22vw, 320px)', 
-                            background: 'rgba(20, 18, 25, 0.92)', 
-                            padding: '1.5rem', 
-                            border: '1px solid #2ecc71', 
-                            borderRadius: '8px', 
-                            boxShadow: '0 0 30px rgba(46, 204, 113, 0.12)' 
-                        }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#2ecc71', marginBottom: '0.85rem', letterSpacing: '2px', fontWeight: 600, fontSize: '0.8rem' }}>
-                                <Zap size={16}/> <span>LIVE LOGS</span>
-                            </div>
-                            <div style={{ color: '#ccc', fontSize: '0.8rem', lineHeight: '1.8', letterSpacing: '1px', fontFamily: 'monospace' }}>
-                                {'>'} DEVICE MISMATCH<br/>
-                                {'>'} UNVERIFIED ROUTE<br/>
-                                {'>'} <span style={{ color: '#e74c3c' }}>HIGH RISK ATO PATTERN</span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* STAGE 4: FINAL DECISION MODAL CARD ("EVIDENCE → ACTION") */}
-                    <motion.div style={{
-                        position: 'absolute',
-                        width: '100%',
-                        height: '100%',
-                        opacity: s4Opacity,
-                        scale: s4Scale,
-                        y: s4Y,
-                        zIndex: 30,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        pointerEvents: 'auto',
-                        willChange: 'opacity, transform'
-                    }}>
-                        <div style={{ 
-                            textAlign: 'center', 
-                            background: 'linear-gradient(135deg, rgba(20, 18, 25, 0.95) 0%, rgba(10, 10, 12, 0.98) 100%)', 
-                            padding: 'clamp(2.5rem, 5vw, 4rem)', 
-                            borderRadius: '16px', 
-                            border: '1px solid rgba(255,255,255,0.12)', 
-                            boxShadow: '0 30px 60px rgba(0,0,0,0.6)', 
-                            maxWidth: '650px',
-                            width: '90vw'
-                        }}>
-                            <ShieldAlert size={44} color="#f39c12" style={{ margin: '0 auto 1.25rem auto' }} />
-                            <span style={{ fontSize: '0.85rem', letterSpacing: '3px', fontWeight: 600, color: '#f39c12', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
-                                DECISION & RECOVERY
-                            </span>
-                            <h2 style={{ fontSize: 'clamp(2.2rem, 4.5vw, 3.5rem)', fontWeight: 700, letterSpacing: '-0.5px', margin: '0 0 0.75rem 0', color: '#ffffff' }}>
-                                EVIDENCE → ACTION
-                            </h2>
-                            <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 'clamp(0.95rem, 1.3vw, 1.1rem)', marginBottom: '2.5rem', letterSpacing: '1px', fontWeight: 400 }}>
-                                Turn dispute evidence into instant automated recovery.
-                            </p>
-                            
-                            <button 
-                                onClick={() => navigate('/login')}
-                                style={{
-                                    background: '#a55eea',
-                                    color: '#fff',
-                                    border: 'none',
-                                    padding: '1rem 2.5rem',
-                                    fontSize: '1rem',
-                                    fontWeight: 600,
-                                    letterSpacing: '1.5px',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    margin: '0 auto',
-                                    boxShadow: '0 10px 25px rgba(165, 94, 234, 0.4)',
-                                    transition: 'all 0.2s ease'
-                                }}
-                            >
-                                ENTER RISKTRACE <ChevronRight size={18} />
-                            </button>
-                        </div>
-                    </motion.div>
-
+                    <button 
+                        onClick={() => navigate('/register')} 
+                        style={{ 
+                            background: 'var(--accent-primary)', 
+                            border: 'none', 
+                            padding: '0.55rem 1.4rem', 
+                            color: '#ffffff', 
+                            fontSize: '0.88rem',
+                            fontWeight: 600,
+                            borderRadius: '6px', 
+                            cursor: 'pointer', 
+                            boxShadow: '0 4px 15px rgba(139, 92, 246, 0.45)',
+                            transition: 'all 0.2s ease' 
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.backgroundColor = 'var(--accent-hover)'; e.currentTarget.style.transform = 'translateY(-1px)'; }}
+                        onMouseOut={e => { e.currentTarget.style.backgroundColor = 'var(--accent-primary)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    >
+                        Get Started
+                    </button>
                 </div>
+            </motion.header>
+
+            {/* ==================================================== */}
+            {/* LAYER 4: TOP EDITORIAL TYPOGRAPHY CONTROLLER         */}
+            {/* AnimatePresence mode="wait" guarantees ONE scene in DOM */}
+            {/* ==================================================== */}
+            <div 
+                style={{ 
+                    position: 'fixed', 
+                    top: 'clamp(82px, 11vh, 110px)', 
+                    left: '50%', 
+                    transform: 'translateX(-50%)', 
+                    width: '92%', 
+                    maxWidth: '840px', 
+                    textAlign: 'center', 
+                    zIndex: 40, 
+                    pointerEvents: 'none' 
+                }}
+            >
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentData.id}
+                        initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: shouldReduceMotion ? 0 : -20 }}
+                        transition={{ duration: 0.28, ease: [0.2, 0.8, 0.2, 1] }}
+                        style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            width: '100%'
+                        }}
+                    >
+                        <span style={{ 
+                            fontSize: 'clamp(0.72rem, 0.8vw, 0.78rem)', 
+                            letterSpacing: '2.5px', 
+                            fontWeight: 600, 
+                            color: currentData.eyebrowColor, 
+                            textTransform: 'uppercase', 
+                            marginBottom: '0.45rem' 
+                        }}>
+                            {currentData.eyebrow}
+                        </span>
+
+                        <h1 style={{ 
+                            fontSize: 'clamp(2.1rem, 3.8vw, 3.4rem)', 
+                            fontWeight: 700, 
+                            letterSpacing: '-0.025em', 
+                            lineHeight: '1.14', 
+                            color: '#F8FAFC', 
+                            margin: '0 0 0.55rem 0', 
+                            textShadow: '0 0 40px rgba(0,0,0,0.8), 0 2px 10px rgba(0,0,0,0.9)' 
+                        }}>
+                            {currentData.title}
+                        </h1>
+
+                        <p style={{ 
+                            fontSize: 'clamp(0.88rem, 1vw, 1.05rem)', 
+                            fontWeight: 400, 
+                            color: 'rgba(255, 255, 255, 0.78)', 
+                            lineHeight: '1.5', 
+                            maxWidth: '560px', 
+                            margin: currentData.hasCta ? '0 0 1.25rem 0' : '0',
+                            textShadow: '0 2px 8px rgba(0,0,0,0.8)'
+                        }}>
+                            {currentData.subtitle}
+                        </p>
+
+                        {currentData.hasCta && (
+                            <motion.div 
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.1, duration: 0.25 }}
+                                style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', pointerEvents: 'auto' }}
+                            >
+                                <button 
+                                    onClick={() => navigate('/register')}
+                                    style={{
+                                        background: 'var(--accent-primary)',
+                                        border: 'none',
+                                        padding: '0.65rem 1.6rem',
+                                        color: '#ffffff',
+                                        fontSize: '0.88rem',
+                                        fontWeight: 600,
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        boxShadow: '0 4px 18px rgba(139, 92, 246, 0.45)',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '0.45rem',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.transform = 'translateY(-1px)'}
+                                    onMouseOut={e => e.currentTarget.style.transform = 'translateY(0)'}
+                                >
+                                    Get Started <ArrowRight size={15} />
+                                </button>
+                                <button 
+                                    onClick={() => navigate('/login')}
+                                    style={{
+                                        background: 'rgba(15, 14, 23, 0.75)',
+                                        border: '1px solid rgba(255, 255, 255, 0.18)',
+                                        padding: '0.65rem 1.4rem',
+                                        color: '#F8FAFC',
+                                        fontSize: '0.88rem',
+                                        fontWeight: 500,
+                                        borderRadius: '6px',
+                                        cursor: 'pointer',
+                                        backdropFilter: 'blur(10px)',
+                                        transition: 'all 0.2s ease'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)'}
+                                    onMouseOut={e => e.currentTarget.style.backgroundColor = 'rgba(15, 14, 23, 0.75)'}
+                                >
+                                    Sign In
+                                </button>
+                            </motion.div>
+                        )}
+                    </motion.div>
+                </AnimatePresence>
             </div>
-            
-            {/* Scroll Indicator (Fades out immediately when scrolling > 3%) */}
+
+            {/* ==================================================== */}
+            {/* LAYER 3: DEDICATED VISUAL STAGE                      */}
+            {/* Positioned comfortably below typography and laptop   */}
+            {/* ==================================================== */}
+            <div 
+                style={{ 
+                    position: 'fixed', 
+                    top: 'clamp(380px, 61vh, 580px)', 
+                    left: '50%', 
+                    transform: 'translate(-50%, -50%)', 
+                    width: '100%', 
+                    maxWidth: '960px', 
+                    height: '380px', 
+                    pointerEvents: 'none', 
+                    zIndex: 30 
+                }}
+            >
+                <AnimatePresence mode="wait">
+                    {/* SCENE 0: HERO - Minimal breathing space, letting full workspace shine */}
+                    {activeScene === 0 && (
+                        <motion.div
+                            key="scene-0"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.25 }}
+                            style={{ width: '100%', height: '100%' }}
+                        />
+                    )}
+
+                    {/* SCENE 1: THE PROBLEM - 6 Fragmented Evidence Vectors */}
+                    {activeScene === 1 && (
+                        <motion.div
+                            key="scene-1"
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.25 }}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(3, 1fr)',
+                                gap: '1rem',
+                                width: 'min(660px, 92%)'
+                            }}>
+                                {[
+                                    { icon: CreditCard, label: 'PAYMENT', val: 'Card 4242 • $2,490', alert: false },
+                                    { icon: User, label: 'CUSTOMER', val: 'Sarah Jenkins (3 Disputes)', alert: true },
+                                    { icon: ShoppingBag, label: 'ORDER', val: 'Apple MacBook Pro M3', alert: false },
+                                    { icon: Truck, label: 'SHIPMENT', val: 'FedEx Signed POD', alert: false },
+                                    { icon: Smartphone, label: 'DEVICE', val: 'IP Mismatch (+480km)', alert: true },
+                                    { icon: HelpCircle, label: 'CLAIM', val: 'Unrecognized Charge', alert: true }
+                                ].map((item, idx) => (
+                                    <div 
+                                        key={idx}
+                                        style={{
+                                            background: 'rgba(15, 14, 23, 0.92)',
+                                            border: `1px solid ${item.alert ? 'rgba(239, 68, 68, 0.5)' : 'rgba(255, 255, 255, 0.12)'}`,
+                                            borderRadius: '10px',
+                                            padding: '0.85rem 1rem',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            gap: '0.35rem',
+                                            boxShadow: item.alert ? '0 0 25px rgba(239, 68, 68, 0.2)' : '0 12px 30px rgba(0,0,0,0.6)',
+                                            backdropFilter: 'blur(12px)'
+                                        }}
+                                    >
+                                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                            <span style={{ fontSize: '0.68rem', letterSpacing: '1.5px', color: item.alert ? '#EF4444' : '#94A3B8', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                                                {item.label}
+                                            </span>
+                                            <item.icon size={15} color={item.alert ? '#EF4444' : '#A78BFA'} />
+                                        </div>
+                                        <span style={{ fontSize: '0.78rem', color: '#F8FAFC', fontWeight: 500 }}>
+                                            {item.val}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* SCENE 2: DECONSTRUCTION - Bank & User Network Nodes */}
+                    {activeScene === 2 && (
+                        <motion.div
+                            key="scene-2"
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.25 }}
+                            style={{ position: 'relative', width: '100%', height: '100%' }}
+                        >
+                            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                <line x1="32%" y1="50%" x2="68%" y2="50%" stroke="#8B5CF6" strokeWidth="1.5" strokeDasharray="5 5" opacity="0.65" />
+                            </svg>
+                            
+                            <div style={{ position: 'absolute', left: '32%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(15, 14, 23, 0.92)', border: '1.5px solid #8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 25px rgba(139, 92, 246, 0.4)' }}>
+                                    <Server size={22} color="#A78BFA" />
+                                </div>
+                                <span style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: '#CBD5E1', letterSpacing: '1.5px', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>BANK_NODE</span>
+                                <span style={{ fontSize: '0.68rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>AUTH_APPROVED</span>
+                            </div>
+
+                            <div style={{ position: 'absolute', left: '50%', top: '38%', transform: 'translate(-50%, -50%)', background: 'rgba(139, 92, 246, 0.15)', border: '1px solid #8B5CF6', padding: '0.35rem 0.9rem', borderRadius: '20px', backdropFilter: 'blur(8px)' }}>
+                                <span style={{ fontSize: '0.7rem', color: '#A78BFA', fontFamily: 'var(--font-mono)', fontWeight: 600, letterSpacing: '1px' }}>3DS VERIFIED</span>
+                            </div>
+
+                            <div style={{ position: 'absolute', left: '68%', top: '50%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(15, 14, 23, 0.92)', border: '1.5px solid #8B5CF6', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 25px rgba(139, 92, 246, 0.4)' }}>
+                                    <Smartphone size={22} color="#A78BFA" />
+                                </div>
+                                <span style={{ marginTop: '0.5rem', fontSize: '0.72rem', color: '#CBD5E1', letterSpacing: '1.5px', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>USER_NODE</span>
+                                <span style={{ fontSize: '0.68rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>IP: 142.250.190.46</span>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* SCENE 3: ANOMALY DETECTION - Evidence Vault Correlation */}
+                    {activeScene === 3 && (
+                        <motion.div
+                            key="scene-3"
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.96 }}
+                            transition={{ duration: 0.25 }}
+                            style={{ position: 'relative', width: '100%', height: '100%' }}
+                        >
+                            <svg style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
+                                <line x1="32%" y1="35%" x2="50%" y2="70%" stroke="#EF4444" strokeWidth="1.5" opacity="0.65" />
+                                <line x1="68%" y1="35%" x2="50%" y2="70%" stroke="#EF4444" strokeWidth="1.5" opacity="0.65" />
+                            </svg>
+
+                            <div style={{ position: 'absolute', left: '32%', top: '35%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <div style={{ padding: '0.45rem 0.9rem', borderRadius: '6px', background: 'rgba(15, 14, 23, 0.92)', border: '1px solid #EF4444', boxShadow: '0 0 20px rgba(239, 68, 68, 0.25)' }}>
+                                    <span style={{ fontSize: '0.68rem', color: '#EF4444', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>+480KM ROUTE DEVIATION</span>
+                                </div>
+                            </div>
+
+                            <div style={{ position: 'absolute', left: '68%', top: '35%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <div style={{ padding: '0.45rem 0.9rem', borderRadius: '6px', background: 'rgba(15, 14, 23, 0.92)', border: '1px solid #EF4444', boxShadow: '0 0 20px rgba(239, 68, 68, 0.25)' }}>
+                                    <span style={{ fontSize: '0.68rem', color: '#EF4444', fontFamily: 'var(--font-mono)', fontWeight: 600 }}>DEVICE MISMATCH DETECTED</span>
+                                </div>
+                            </div>
+
+                            <div style={{ position: 'absolute', left: '50%', top: '70%', transform: 'translate(-50%, -50%)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <div style={{ width: '60px', height: '60px', borderRadius: '12px', background: 'rgba(15, 14, 23, 0.92)', border: '1.5px solid #EF4444', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 0 35px rgba(239, 68, 68, 0.4)' }}>
+                                    <Database size={26} color="#EF4444" />
+                                </div>
+                                <span style={{ marginTop: '0.45rem', color: '#EF4444', fontWeight: 600, letterSpacing: '2px', fontSize: '0.74rem', fontFamily: 'var(--font-mono)' }}>
+                                    EVIDENCE VAULT
+                                </span>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* SCENE 4: AI REASONING - Neural Investigation Engine Telemetry */}
+                    {activeScene === 4 && (
+                        <motion.div
+                            key="scene-4"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.25 }}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <div style={{ 
+                                width: 'min(580px, 92%)', 
+                                background: 'rgba(15, 14, 23, 0.95)', 
+                                padding: '1.4rem 1.6rem', 
+                                border: '1px solid rgba(16, 185, 129, 0.45)', 
+                                borderRadius: '12px', 
+                                boxShadow: '0 20px 50px rgba(0, 0, 0, 0.8), 0 0 30px rgba(16, 185, 129, 0.15)',
+                                backdropFilter: 'blur(16px)'
+                            }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.65rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#10B981', letterSpacing: '2px', fontWeight: 600, fontSize: '0.76rem', fontFamily: 'var(--font-mono)' }}>
+                                        <Zap size={15}/> <span>NEURAL INVESTIGATION ENGINE</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.72rem', color: '#10B981', background: 'rgba(16, 185, 129, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                                        84% WIN PROBABILITY
+                                    </span>
+                                </div>
+                                <div style={{ color: '#94A3B8', fontSize: '0.8rem', lineHeight: '1.8', letterSpacing: '0.5px', fontFamily: 'var(--font-mono)' }}>
+                                    <div>{'>'} <span style={{ color: '#F8FAFC' }}>CONTRADICTION ISOLATED:</span> Buyer claims item not delivered.</div>
+                                    <div>{'>'} <span style={{ color: '#10B981' }}>PROOF OF DELIVERY:</span> Signed POD matches billing name + GPS coords.</div>
+                                    <div>{'>'} <span style={{ color: '#10B981' }}>STRONG DEFENSE PACKAGE:</span> 4 independent evidence vectors matched.</div>
+                                    <div style={{ marginTop: '0.45rem', paddingTop: '0.45rem', borderTop: '1px dashed rgba(255,255,255,0.1)', color: '#A78BFA' }}>
+                                        {'>'} RECOMMENDATION: CONTEST DISPUTE WITH COMPILED EVIDENCE PACK.
+                                    </div>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* SCENE 5: EVIDENCE -> ACTION - 3 Merchant Decision Cards */}
+                    {activeScene === 5 && (
+                        <motion.div
+                            key="scene-5"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.25 }}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', width: 'min(680px, 92%)' }}>
+                                <div style={{ background: 'rgba(15, 14, 23, 0.94)', border: '1.5px solid #10B981', borderRadius: '12px', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', boxShadow: '0 0 30px rgba(16, 185, 129, 0.25)', backdropFilter: 'blur(16px)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <span style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#10B981', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>RECOMMENDED</span>
+                                        <CheckCircle2 size={16} color="#10B981" />
+                                    </div>
+                                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#F8FAFC' }}>CONTEST</span>
+                                    <span style={{ fontSize: '0.75rem', color: '#94A3B8', lineHeight: '1.4' }}>Autonomous evidence bundle ready for payment gateway submission.</span>
+                                </div>
+
+                                <div style={{ background: 'rgba(15, 14, 23, 0.94)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '12px', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', backdropFilter: 'blur(16px)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <span style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#F59E0B', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>OPTIONAL</span>
+                                        <FileText size={16} color="#F59E0B" />
+                                    </div>
+                                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#F8FAFC' }}>REQUEST PROOF</span>
+                                    <span style={{ fontSize: '0.75rem', color: '#94A3B8', lineHeight: '1.4' }}>Poll carrier API for supplementary delivery photographs and signature.</span>
+                                </div>
+
+                                <div style={{ background: 'rgba(15, 14, 23, 0.94)', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '12px', padding: '1.25rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.65rem', backdropFilter: 'blur(16px)' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                        <span style={{ fontSize: '0.68rem', letterSpacing: '2px', color: '#64748B', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>FALLBACK</span>
+                                        <ShieldAlert size={16} color="#64748B" />
+                                    </div>
+                                    <span style={{ fontSize: '1rem', fontWeight: 700, color: '#CBD5E1' }}>CONCEDE</span>
+                                    <span style={{ fontSize: '0.75rem', color: '#64748B', lineHeight: '1.4' }}>Safeguard merchant standing when dispute viability is below margin.</span>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* SCENE 6: PATTERN INTELLIGENCE - Cross-Dispute Syndicate Radar */}
+                    {activeScene === 6 && (
+                        <motion.div
+                            key="scene-6"
+                            initial={{ opacity: 0, y: 15 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -15 }}
+                            transition={{ duration: 0.25 }}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <div style={{ width: 'min(600px, 92%)', background: 'rgba(15, 14, 23, 0.95)', border: '1px solid rgba(139, 92, 246, 0.4)', borderRadius: '14px', padding: '1.4rem 1.6rem', boxShadow: '0 20px 50px rgba(0,0,0,0.8), 0 0 35px rgba(139, 92, 246, 0.25)', backdropFilter: 'blur(16px)' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '0.6rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: '#A78BFA', fontWeight: 600, fontSize: '0.76rem', letterSpacing: '1.5px', fontFamily: 'var(--font-mono)' }}>
+                                        <Network size={16}/> <span>CROSS-MERCHANT SYNDICATE RADAR</span>
+                                    </div>
+                                    <span style={{ fontSize: '0.72rem', color: '#EF4444', background: 'rgba(239, 68, 68, 0.15)', padding: '0.2rem 0.6rem', borderRadius: '4px', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
+                                        CLUSTER ACTIVE
+                                    </span>
+                                </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                                    {[
+                                        { id: 'DSP_9482', risk: 'HIGH', match: 'Shared Device Hash (dev_8f29c4)', merchant: 'Storefront A' },
+                                        { id: 'DSP_9487', risk: 'HIGH', match: 'Burner Phone Number Correlation', merchant: 'Storefront B' },
+                                        { id: 'DSP_9501', risk: 'CRITICAL', match: 'Recurring Proxy IP Range (+480km)', merchant: 'Storefront C' }
+                                    ].map((dsp, i) => (
+                                        <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', padding: '0.65rem 0.85rem', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+                                                <span style={{ fontSize: '0.75rem', color: '#F8FAFC', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{dsp.id} • {dsp.merchant}</span>
+                                                <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>{dsp.match}</span>
+                                            </div>
+                                            <span style={{ fontSize: '0.68rem', color: '#EF4444', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{dsp.risk}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+
+                    {/* SCENE 7: FINAL RESOLUTION - Glowing Shield & Final CTA */}
+                    {activeScene === 7 && (
+                        <motion.div
+                            key="scene-7"
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.28 }}
+                            style={{
+                                width: '100%',
+                                height: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '1.75rem',
+                                pointerEvents: 'auto'
+                            }}
+                        >
+                            <div style={{
+                                width: '68px',
+                                height: '68px',
+                                borderRadius: '18px',
+                                background: 'rgba(16, 185, 129, 0.15)',
+                                border: '1.5px solid rgba(16, 185, 129, 0.45)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                boxShadow: '0 0 40px rgba(16, 185, 129, 0.35)',
+                                backdropFilter: 'blur(12px)'
+                            }}>
+                                <ShieldCheck size={36} color="#10B981" />
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1.25rem', flexWrap: 'wrap' }}>
+                                <button 
+                                    onClick={() => navigate('/register')}
+                                    className="rt-btn rt-btn-primary"
+                                    style={{ padding: '0.95rem 2.4rem', fontSize: '0.95rem' }}
+                                >
+                                    ENTER RISKTRACE <ArrowRight size={18} />
+                                </button>
+                                <button 
+                                    onClick={() => navigate('/login')}
+                                    className="rt-btn rt-btn-secondary"
+                                    style={{ padding: '0.95rem 2.2rem', fontSize: '0.95rem' }}
+                                >
+                                    Sign In
+                                </button>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginTop: '0.5rem' }}>
+                                <span style={{ fontSize: '0.74rem', color: '#94A3B8', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Lock size={13} color="#10B981" /> BANK-GRADE SECURITY
+                                </span>
+                                <span style={{ fontSize: '0.74rem', color: '#94A3B8', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <CheckCircle2 size={13} color="#10B981" /> 100% AUDIT TRAIL
+                                </span>
+                                <span style={{ fontSize: '0.74rem', color: '#94A3B8', letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                                    <Layers size={13} color="#10B981" /> EXPLAINABLE AI
+                                </span>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Scroll Indicator (Fades out immediately when scrolling > 2.5%) */}
             <motion.div 
                 style={{ 
-                    position: 'fixed', bottom: '2rem', left: '50%', transform: 'translateX(-50%)', 
+                    position: 'fixed', 
+                    bottom: '2rem', 
+                    left: '50%', 
+                    transform: 'translateX(-50%)', 
                     opacity: scrollPromptOpacity,
-                    color: '#747d8c', letterSpacing: '2px', fontSize: '0.75rem',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
+                    color: '#64748B', 
+                    letterSpacing: '2px', 
+                    fontSize: '0.75rem',
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center', 
+                    gap: '0.5rem',
                     zIndex: 40,
                     pointerEvents: 'none'
                 }}
             >
                 SCROLL TO INVESTIGATE
-                <div style={{ width: '1px', height: '24px', background: 'linear-gradient(to bottom, #747d8c, transparent)' }} />
+                <div style={{ width: '1px', height: '24px', background: 'linear-gradient(to bottom, #64748B, transparent)' }} />
             </motion.div>
-
-        </motion.div>
+        </div>
     );
 }

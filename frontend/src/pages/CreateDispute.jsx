@@ -51,101 +51,116 @@ export default function CreateDispute() {
     };
 
     return (
-        <div style={{ padding: '2rem', maxWidth: '1000px', margin: '0 auto', color: '#f1f2f6', fontFamily: 'system-ui, sans-serif' }}>
-            <button onClick={() => navigate('/disputes')} style={{ background: 'transparent', border: 'none', color: '#747d8c', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', padding: 0 }}>
-                <ArrowLeft size={16} /> Back to Command Center
+        <div style={{ padding: '2rem 0', maxWidth: '900px', margin: '0 auto', color: 'var(--text-main)', fontFamily: 'var(--font-sans)' }}>
+            <button 
+                onClick={() => navigate('/disputes')} 
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', padding: 0, fontSize: '0.85rem', fontWeight: 500 }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--text-main)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--text-muted)'; }}
+            >
+                <ArrowLeft size={16} /> Back to Disputes Ledger
             </button>
 
-            <h1 style={{ fontSize: '2.5rem', fontWeight: 300, marginBottom: '0.5rem', color: '#a55eea' }}>Inject Custom Case</h1>
-            <p style={{ color: '#747d8c', marginBottom: '3rem', fontSize: '1.1rem' }}>Submit a manual dispute case into the AI pipeline for assessment.</p>
+            <div style={{ marginBottom: '2.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                    <h1 style={{ fontSize: '2rem', fontWeight: 700, margin: 0, letterSpacing: '-0.03em', color: 'var(--text-main)' }}>Inject Dispute Dossier</h1>
+                    <span className="rt-badge rt-badge-violet">MANUAL INGESTION</span>
+                </div>
+                <p style={{ color: 'var(--text-muted)', margin: 0, fontSize: '0.9rem' }}>Submit custom case parameters directly into the RiskTrace autonomous investigation pipeline.</p>
+            </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                 
-                <div className="glass-panel" style={sectionStyle}>
-                    <h3 style={headerStyle}><User size={18}/> Customer Profile</h3>
+                <div className="rt-card" style={{ padding: '1.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                            <User size={15} color="var(--accent-violet)" />
+                        </div>
+                        <h3 style={{ margin: 0, color: 'var(--text-main)', fontSize: '0.95rem', fontWeight: 600, letterSpacing: '-0.01em' }}>Customer Profile</h3>
+                    </div>
                     <div style={gridStyle}>
-                        <Input label="Name" name="customerName" value={formData.customerName} onChange={handleChange} required />
-                        <Input label="Email" name="customerEmail" type="email" value={formData.customerEmail} onChange={handleChange} required />
-                        <Input label="Phone" name="customerPhone" value={formData.customerPhone} onChange={handleChange} />
+                        <Input label="Customer Full Name" name="customerName" value={formData.customerName} onChange={handleChange} required />
+                        <Input label="Email Address" name="customerEmail" type="email" value={formData.customerEmail} onChange={handleChange} required />
+                        <Input label="Phone Number" name="customerPhone" value={formData.customerPhone} onChange={handleChange} />
                     </div>
                 </div>
 
-                <div className="glass-panel" style={sectionStyle}>
-                    <h3 style={headerStyle}><CreditCard size={18}/> Transaction & Dispute</h3>
+                <div className="rt-card" style={{ padding: '1.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                            <CreditCard size={15} color="var(--accent-violet)" />
+                        </div>
+                        <h3 style={{ margin: 0, color: 'var(--text-main)', fontSize: '0.95rem', fontWeight: 600, letterSpacing: '-0.01em' }}>Transaction & Dispute Metadata</h3>
+                    </div>
                     <div style={gridStyle}>
                         <Input label="Amount" name="orderAmount" type="number" step="0.01" value={formData.orderAmount} onChange={handleChange} required />
                         <Input label="Currency" name="orderCurrency" value={formData.orderCurrency} onChange={handleChange} required />
                         <Select label="Dispute Reason" name="disputeReason" value={formData.disputeReason} onChange={handleChange} options={['FRAUDULENT_TRANSACTION', 'PRODUCT_NOT_RECEIVED', 'PRODUCT_UNACCEPTABLE', 'SUBSCRIPTION_CANCELED']} />
                         
                         <Input label="Payment Method" name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} />
-                        <Input label="IP Address" name="ipAddress" value={formData.ipAddress} onChange={handleChange} />
+                        <Input label="Origin IP Address" name="ipAddress" value={formData.ipAddress} onChange={handleChange} />
                         
-                        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '1.5rem' }}>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: '#ccc' }}>
-                                <input type="checkbox" name="is3dsAuthenticated" checked={formData.is3dsAuthenticated} onChange={handleChange} />
+                        <div style={{ display: 'flex', gap: '2rem', alignItems: 'center', marginTop: '1rem', gridColumn: '1 / -1' }}>
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                <input type="checkbox" name="is3dsAuthenticated" checked={formData.is3dsAuthenticated} onChange={handleChange} style={{ accentColor: 'var(--accent-violet)' }} />
                                 3D Secure Authenticated
                             </label>
-                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: '#ccc' }}>
-                                <input type="checkbox" name="cvvMatched" checked={formData.cvvMatched} onChange={handleChange} />
-                                CVV Matched
+                            <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer', color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+                                <input type="checkbox" name="cvvMatched" checked={formData.cvvMatched} onChange={handleChange} style={{ accentColor: 'var(--accent-violet)' }} />
+                                CVV Match Confirmed
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <div className="glass-panel" style={sectionStyle}>
-                    <h3 style={headerStyle}><Package size={18}/> Fulfillment Details</h3>
+                <div className="rt-card" style={{ padding: '1.75rem' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.5rem' }}>
+                        <div style={{ width: '28px', height: '28px', borderRadius: '6px', background: 'rgba(139, 92, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(139, 92, 246, 0.3)' }}>
+                            <Package size={15} color="var(--accent-violet)" />
+                        </div>
+                        <h3 style={{ margin: 0, color: 'var(--text-main)', fontSize: '0.95rem', fontWeight: 600, letterSpacing: '-0.01em' }}>Fulfillment & Delivery</h3>
+                    </div>
                     <div style={gridStyle}>
-                        <Input label="Tracking Number" name="shipmentTracking" value={formData.shipmentTracking} onChange={handleChange} />
-                        <Input label="Carrier" name="shipmentCarrier" value={formData.shipmentCarrier} onChange={handleChange} />
-                        <Select label="Status" name="shipmentStatus" value={formData.shipmentStatus} onChange={handleChange} options={['PENDING', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED', 'RETURNED']} />
+                        <Input label="Carrier Tracking #" name="shipmentTracking" value={formData.shipmentTracking} onChange={handleChange} />
+                        <Input label="Shipping Carrier" name="shipmentCarrier" value={formData.shipmentCarrier} onChange={handleChange} />
+                        <Select label="Fulfillment Status" name="shipmentStatus" value={formData.shipmentStatus} onChange={handleChange} options={['PENDING', 'SHIPPED', 'IN_TRANSIT', 'DELIVERED', 'RETURNED']} />
                         <div style={{ gridColumn: '1 / -1' }}>
-                            <Input label="Shipping Address" name="shipmentAddress" value={formData.shipmentAddress} onChange={handleChange} />
+                            <Input label="Destination Address" name="shipmentAddress" value={formData.shipmentAddress} onChange={handleChange} />
                         </div>
                     </div>
                 </div>
 
-                <button 
-                    type="submit" 
-                    disabled={submitting}
-                    style={{ 
-                        background: 'linear-gradient(90deg, #a55eea, #7b2cbf)', 
-                        border: 'none', borderRadius: '30px', 
-                        padding: '1rem 2.5rem', color: 'white', 
-                        fontSize: '1.1rem', cursor: submitting ? 'not-allowed' : 'pointer',
-                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem',
-                        boxShadow: '0 4px 15px rgba(170, 59, 255, 0.4)',
-                        textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 600,
-                        alignSelf: 'flex-start', marginTop: '1rem', opacity: submitting ? 0.7 : 1
-                    }}
-                >
-                    {submitting ? <><Loader2 size={20} className="spin" style={{ animation: 'rotate 2s linear infinite' }} /> Injecting Data...</> : <><Send size={20} /> Inject Case Data</>}
-                </button>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+                    <button 
+                        type="submit" 
+                        disabled={submitting}
+                        className="rt-btn-primary"
+                        style={{ 
+                            padding: '1rem 2rem', 
+                            fontSize: '0.95rem',
+                            letterSpacing: '0.04em'
+                        }}
+                    >
+                        {submitting ? <><Loader2 size={18} style={{ animation: 'spin 1.5s linear infinite' }} /> Ingesting Telemetry...</> : <><Send size={18} /> Ingest Case Telemetry</>}
+                    </button>
+                </div>
 
             </form>
         </div>
     );
 }
 
-const sectionStyle = {
-    padding: '2rem'
-};
-
-const headerStyle = {
-    margin: '0 0 1.5rem 0', color: '#a55eea', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1.2rem', fontWeight: 400
-};
-
 const gridStyle = {
-    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem'
+    display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '1.25rem'
 };
 
 function Input({ label, ...props }) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.85rem', color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>{label}</label>
             <input 
                 {...props} 
-                className="premium-input"
+                className="rt-input"
             />
         </div>
     );
@@ -153,13 +168,14 @@ function Input({ label, ...props }) {
 
 function Select({ label, options, ...props }) {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <label style={{ fontSize: '0.85rem', color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 600 }}>{label}</label>
             <select 
                 {...props} 
-                className="premium-input"
+                className="rt-input"
+                style={{ cursor: 'pointer' }}
             >
-                {options.map(opt => <option key={opt} value={opt} style={{ background: '#1a1a24' }}>{opt}</option>)}
+                {options.map(opt => <option key={opt} value={opt} style={{ background: '#0F0E17' }}>{opt}</option>)}
             </select>
         </div>
     );

@@ -31,3 +31,8 @@ frontend/*.local
 # Private Configuration
 backend/src/main/resources/application.properties
 backend/test_groq.py
+
+# Agent and IDE skills
+.agents/
+frontend/.agents/
+

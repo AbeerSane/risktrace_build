@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { fetchDisputeDetails, startInvestigation, pollInvestigation } from "../api/api";
 import InvestigationSequence from "../components/InvestigationSequence";
 import FinalWorkspace from "../components/FinalWorkspace";
-import { PlayCircle, ArrowLeft, AlertTriangle } from "lucide-react";
+import { PlayCircle, ArrowLeft, AlertTriangle, ShieldCheck, Cpu, Clock, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DisputeDetail() {
@@ -31,7 +31,7 @@ export default function DisputeDetail() {
             });
     }, [id]);
 
-    // Polling mechanism
+    // Polling mechanism during ANIMATING state
     useEffect(() => {
         let interval;
         if (viewState === 'ANIMATING' && sessionId) {
@@ -41,13 +41,17 @@ export default function DisputeDetail() {
                         setBackendStatus(sessionData.status);
                         if (sessionData.status === 'COMPLETE' || sessionData.status === 'FAILED') {
                             if (sessionData.resultPayload) {
-                                setPayload(JSON.parse(sessionData.resultPayload));
+                                try {
+                                    setPayload(JSON.parse(sessionData.resultPayload));
+                                } catch (e) {
+                                    console.error("Failed to parse resultPayload", e);
+                                }
                             }
                             clearInterval(interval);
                         }
                     })
                     .catch(console.error);
-            }, 500); // Aggressive polling for snappy updates
+            }, 500);
         }
         return () => clearInterval(interval);
     }, [viewState, sessionId]);
@@ -60,22 +64,28 @@ export default function DisputeDetail() {
             setBackendStatus(session.status);
         } catch (err) {
             console.error("Failed to initiate investigation", err);
-            alert("System Failure: Unable to initiate AI engine.");
+            alert("Unable to initiate AI engine. Ensure backend server is running.");
             setViewState('INITIAL');
         }
     };
 
     if (loading) return (
-        <div style={{ padding: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', height: '100vh', justifyContent: 'center' }}>
-            <div className="cyber-loader"></div>
-            <div style={{ color: '#a55eea', letterSpacing: '2px', textTransform: 'uppercase' }}>Fetching Dispute Telemetry...</div>
+        <div style={{ padding: '6rem 2rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', justifyContent: 'center' }}>
+            <div className="rt-pulse-live" style={{ width: '16px', height: '16px' }} />
+            <div style={{ color: '#8B5CF6', letterSpacing: '2px', textTransform: 'uppercase', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
+                FETCHING DISPUTE TELEMETRY...
+            </div>
         </div>
     );
+
     if (error) return (
-        <div className="glass-panel" style={{ color: '#ff4757', padding: '2rem', border: '1px solid rgba(255, 71, 87, 0.4)', backgroundColor: 'rgba(255, 71, 87, 0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '1rem', maxWidth: '600px', margin: '4rem auto' }}>
-            <AlertTriangle size={48} />
-            <h3 style={{ margin: 0, letterSpacing: '2px', textTransform: 'uppercase' }}>System Failure</h3>
-            <p style={{ fontFamily: 'monospace', margin: 0, opacity: 0.8 }}>{error}</p>
+        <div className="rt-card" style={{ padding: '2.5rem', border: '1px solid rgba(239, 68, 68, 0.4)', backgroundColor: 'rgba(239, 68, 68, 0.05)', textAlign: 'center', maxWidth: '600px', margin: '3rem auto' }}>
+            <AlertTriangle size={40} color="#EF4444" style={{ margin: '0 auto 1rem auto' }} />
+            <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#F8FAFC' }}>Case Telemetry Unavailable</h3>
+            <p style={{ color: '#94A3B8', fontSize: '0.9rem', marginBottom: '1.5rem', fontFamily: 'var(--font-mono)' }}>{error}</p>
+            <button onClick={() => navigate('/disputes')} className="rt-btn rt-btn-secondary">
+                ← Return to Registry
+            </button>
         </div>
     );
 
@@ -92,89 +102,121 @@ export default function DisputeDetail() {
         try {
             const session = await startInvestigation(id);
             setSessionId(session.id);
-            // We do NOT set viewState to 'ANIMATING'. We let FinalWorkspace handle its own re-animation
-            // But we must poll to get the new payload.
             setBackendStatus(session.status);
             
             const pollInterval = setInterval(async () => {
                 const sessionData = await pollInvestigation(session.id);
                 if (sessionData.status === 'COMPLETE' || sessionData.status === 'FAILED') {
                     if (sessionData.resultPayload) {
-                        setPayload(JSON.parse(sessionData.resultPayload));
+                        try {
+                            setPayload(JSON.parse(sessionData.resultPayload));
+                        } catch (e) {
+                            console.error("Failed to parse resultPayload on reassess", e);
+                        }
                     }
                     clearInterval(pollInterval);
                 }
             }, 500);
         } catch (err) {
-            console.error("Failed to reassess", err);
+            console.error("Failed to reassess case", err);
         }
     };
 
     if (viewState === 'WORKSPACE') {
         return (
             <div>
-                <button onClick={() => navigate('/disputes')} style={{ background: 'transparent', border: 'none', color: '#747d8c', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', padding: '1rem 2rem' }}>
-                    <ArrowLeft size={16} /> Back to Command Center
+                <button 
+                    onClick={() => navigate('/disputes')} 
+                    style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.5rem', fontSize: '0.85rem', padding: 0 }}
+                    onMouseOver={e => e.currentTarget.style.color = '#F8FAFC'}
+                    onMouseOut={e => e.currentTarget.style.color = '#94A3B8'}
+                >
+                    <ArrowLeft size={16} /> Back to Dispute Registry
                 </button>
                 <FinalWorkspace dispute={dispute} payload={payload} onReassess={handleReassess} />
             </div>
         );
     }
 
-    // INITIAL VIEW
+    // INITIAL VIEW: Clean Forensic Launcher
     const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
     
     return (
-        <div style={{ padding: '2rem', maxWidth: '800px', margin: '0 auto', color: '#f1f2f6', fontFamily: 'system-ui, sans-serif' }}>
-            <button onClick={() => navigate('/disputes')} style={{ background: 'transparent', border: 'none', color: '#747d8c', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '2rem', padding: 0 }}>
-                <ArrowLeft size={16} /> Back
+        <div style={{ maxWidth: '880px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+            <button 
+                onClick={() => navigate('/disputes')} 
+                style={{ background: 'transparent', border: 'none', color: '#94A3B8', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', padding: 0, width: 'fit-content' }}
+                onMouseOver={e => e.currentTarget.style.color = '#F8FAFC'}
+                onMouseOut={e => e.currentTarget.style.color = '#94A3B8'}
+            >
+                <ArrowLeft size={16} /> Back to Registry
             </button>
 
-            <h1 style={{ fontSize: '2rem', fontWeight: 300, marginBottom: '0.5rem' }}>Dispute <span style={{ color: '#a55eea', fontFamily: 'monospace' }}>{dispute.id.substring(0,8)}</span></h1>
-            <div style={{ color: '#ccc', marginBottom: '3rem', fontSize: '1.2rem' }}>{dispute.reason} — {formatter.format(dispute.amount)}</div>
+            {/* Dispute Dossier Card */}
+            <div className="rt-card" style={{ padding: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        <span className="rt-badge rt-badge-warning">DISPUTE ACTIVE</span>
+                        <span style={{ fontSize: '0.8rem', color: '#64748B', fontFamily: 'var(--font-mono)' }}>ID: {dispute.id}</span>
+                    </div>
+                    <h2 style={{ fontSize: '1.6rem', fontWeight: 700, color: '#F8FAFC', marginBottom: '0.35rem' }}>
+                        {dispute.reason}
+                    </h2>
+                    <p style={{ color: '#94A3B8', fontSize: '0.9rem' }}>
+                        Merchant: <span style={{ color: '#F8FAFC' }}>{dispute.merchantName || "Razorpay Demo Store"}</span>
+                    </p>
+                </div>
 
-            <div className="glass-panel" style={{ padding: '4rem 3rem', textAlign: 'center' }}>
-                <CpuIcon />
-                <h2 style={{ fontWeight: 300, marginBottom: '1rem' }}>AI Investigation Engine Ready</h2>
-                <p style={{ color: '#747d8c', marginBottom: '2rem', maxWidth: '400px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
-                    Initiate the autonomous AI engine to reconstruct the transaction graph, gather related evidence, and detect contradictions.
+                <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontSize: '0.75rem', color: '#64748B', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Disputed Amount</div>
+                    <div style={{ fontSize: '2.2rem', fontWeight: 700, color: '#F8FAFC', fontFamily: 'var(--font-mono)' }}>
+                        {formatter.format(dispute.amount)}
+                    </div>
+                </div>
+            </div>
+
+            {/* Autonomous AI Engine Trigger Box */}
+            <div className="rt-card" style={{ padding: '4rem 3rem', textAlign: 'center', background: 'linear-gradient(145deg, rgba(139, 92, 246, 0.05) 0%, var(--bg-surface-1) 100%)', borderColor: 'rgba(139, 92, 246, 0.25)' }}>
+                <div style={{
+                    width: '64px',
+                    height: '64px',
+                    borderRadius: '16px',
+                    background: 'rgba(139, 92, 246, 0.12)',
+                    border: '1.5px solid #8B5CF6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: '0 auto 1.5rem auto',
+                    boxShadow: '0 0 30px rgba(139, 92, 246, 0.3)'
+                }}>
+                    <Cpu size={32} color="#8B5CF6" />
+                </div>
+
+                <span style={{ fontSize: '0.78rem', letterSpacing: '2.5px', fontWeight: 600, color: '#8B5CF6', textTransform: 'uppercase', display: 'block', marginBottom: '0.5rem' }}>
+                    AUTONOMOUS ARBITRATION REASONING
+                </span>
+                <h3 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#F8FAFC', marginBottom: '0.75rem', letterSpacing: '-0.3px' }}>
+                    AI Investigation Engine Ready
+                </h3>
+                <p style={{ color: '#94A3B8', maxWidth: '500px', margin: '0 auto 2.5rem auto', lineHeight: 1.6, fontSize: '0.95rem' }}>
+                    Trigger autonomous case reconstruction. The engine will inspect transaction logs, verify shipment tracking, extract proof from the evidence vault, and generate a verifiably sound recommendation.
                 </p>
+
                 <motion.button 
                     onClick={handleInitiate}
-                    animate={{ 
-                        scale: [1, 1.03, 1], 
-                        boxShadow: [
-                            '0 4px 15px rgba(170, 59, 255, 0.4)', 
-                            '0 4px 30px rgba(255, 255, 255, 0.5)', 
-                            '0 4px 15px rgba(170, 59, 255, 0.4)'
-                        ] 
-                    }}
-                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="rt-btn rt-btn-primary"
                     style={{ 
-                        background: 'linear-gradient(90deg, #a55eea, #7b2cbf)', 
-                        border: '1px solid rgba(255, 255, 255, 0.5)', borderRadius: '30px', 
-                        padding: '1.2rem 3rem', color: 'white', 
-                        fontSize: '1.2rem', cursor: 'pointer',
-                        display: 'inline-flex', alignItems: 'center', gap: '0.8rem',
-                        textTransform: 'uppercase', letterSpacing: '2px', fontWeight: 700
+                        padding: '1.1rem 3rem', 
+                        fontSize: '1.05rem', 
+                        borderRadius: '10px',
+                        boxShadow: '0 8px 30px rgba(139, 92, 246, 0.4)'
                     }}
                 >
-                    <PlayCircle size={24} /> Initialize Investigation
+                    <PlayCircle size={22} /> Initialize AI Investigation
                 </motion.button>
             </div>
         </div>
-    );
-}
-
-function CpuIcon() {
-    return (
-        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#a55eea" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" style={{ marginBottom: '1.5rem', filter: 'drop-shadow(0 0 10px rgba(170, 59, 255, 0.5))' }}>
-            <rect width="16" height="16" x="4" y="4" rx="2" />
-            <rect width="6" height="6" x="9" y="9" rx="1" />
-            <path d="M15 2v2" /><path d="M15 20v2" />
-            <path d="M2 15h2" /><path d="M2 9h2" />
-            <path d="M20 15h2" /><path d="M20 9h2" />
-            <path d="M9 2v2" /><path d="M9 20v2" />
-        </svg>
     );
 }

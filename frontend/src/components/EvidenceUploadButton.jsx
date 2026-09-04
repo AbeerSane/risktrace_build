@@ -45,23 +45,23 @@ export default function EvidenceUploadButton({ disputeId, onUploadSuccess }) {
             <button 
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
+                className="rt-btn-secondary"
                 style={{
-                    background: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px dashed #a55eea',
-                    color: '#a55eea',
-                    padding: '0.8rem 1.5rem',
-                    borderRadius: '8px',
-                    display: 'flex', alignItems: 'center', gap: '0.5rem',
-                    cursor: uploading ? 'not-allowed' : 'pointer',
-                    fontSize: '0.9rem', fontWeight: 600, letterSpacing: '1px',
-                    transition: 'all 0.2s',
-                    textTransform: 'uppercase'
+                    width: '100%',
+                    justifyContent: 'center',
+                    borderStyle: 'dashed',
+                    borderColor: 'rgba(139, 92, 246, 0.4)',
+                    color: 'var(--accent-violet)',
+                    padding: '0.85rem 1rem',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    letterSpacing: '0.04em'
                 }}
             >
                 {uploading ? (
-                    <><Loader2 size={18} style={{ animation: 'spin 2s linear infinite' }} /> Uploading...</>
+                    <><Loader2 size={16} style={{ animation: 'spin 1.5s linear infinite' }} /> Uploading Telemetry...</>
                 ) : (
-                    <><UploadCloud size={18} /> Add Evidence</>
+                    <><UploadCloud size={16} /> Upload Case Evidence</>
                 )}
             </button>
         </div>
