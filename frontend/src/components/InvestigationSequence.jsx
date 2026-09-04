@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Search, Server, FileText, CheckCircle, Database, ShieldAlert, Cpu } from "lucide-react";
 
 const ANIMATION_PACE_MS = 2000;
@@ -63,6 +63,7 @@ export default function InvestigationSequence({ backendStatus, onAnimationComple
     }, [displayState, onAnimationComplete]);
 
     const stateIndex = STATES.indexOf(displayState);
+    const shouldReduceMotion = useReducedMotion();
 
     return (
         <div style={{ position: 'relative', height: '100vh', width: '100%', background: '#08060d', overflow: 'hidden', color: '#f1f2f6', fontFamily: 'system-ui, sans-serif' }}>
@@ -95,40 +96,41 @@ export default function InvestigationSequence({ backendStatus, onAnimationComple
                     {/* Path: Dispute -> Payment */}
                     {stateIndex >= 1 && (
                         <motion.path 
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }}
+                            initial={shouldReduceMotion ? { pathLength: 1, opacity: 0.5 } : { pathLength: 0 }} 
+                            animate={{ pathLength: 1, opacity: 0.5 }} transition={{ duration: 1 }}
                             d="M 400 300 L 200 150" stroke={stateIndex >= 4 ? "#e74c3c" : "#3498db"} strokeWidth="2" fill="none"
-                            style={{ opacity: 0.5 }}
                         />
                     )}
                     
                     {/* Path: Dispute -> Order */}
                     {stateIndex >= 1 && (
                         <motion.path 
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }}
+                            initial={shouldReduceMotion ? { pathLength: 1, opacity: 0.5 } : { pathLength: 0 }} 
+                            animate={{ pathLength: 1, opacity: 0.5 }} transition={{ duration: 1 }}
                             d="M 400 300 L 600 150" stroke="#3498db" strokeWidth="2" fill="none"
-                            style={{ opacity: 0.5 }}
                         />
                     )}
 
                     {/* Path: Dispute -> Customer */}
                     {stateIndex >= 1 && (
                         <motion.path 
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }}
+                            initial={shouldReduceMotion ? { pathLength: 1, opacity: 0.5 } : { pathLength: 0 }} 
+                            animate={{ pathLength: 1, opacity: 0.5 }} transition={{ duration: 1 }}
                             d="M 400 300 L 200 450" stroke="#3498db" strokeWidth="2" fill="none"
-                            style={{ opacity: 0.5 }}
                         />
                     )}
 
                     {/* Path: Order -> Shipment (Evidence) */}
                     {stateIndex >= 2 && (
                         <motion.path 
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1 }}
+                            initial={shouldReduceMotion ? { pathLength: 1 } : { pathLength: 0 }} 
+                            animate={{ pathLength: 1 }} transition={{ duration: 1 }}
                             d="M 600 150 L 750 300" stroke="#2ecc71" strokeWidth="2" fill="none" strokeDasharray="5,5"
                         />
                     )}
 
                     {/* AI Reasoning Beams */}
-                    {stateIndex >= 6 && (
+                    {stateIndex >= 6 && !shouldReduceMotion && (
                         <motion.path 
                             initial={{ pathLength: 0, opacity: 0 }} animate={{ pathLength: 1, opacity: 0.8 }} transition={{ duration: 2, repeat: Infinity }}
                             d="M 400 300 L 400 100" stroke="#a55eea" strokeWidth="4" fill="none" filter="blur(4px)"
@@ -191,12 +193,13 @@ export default function InvestigationSequence({ backendStatus, onAnimationComple
 }
 
 function GraphNode({ id, label, x, y, icon, delay, size = 60, glow = 'rgba(255,255,255,0.1)', pulsing = false }) {
+    const shouldReduceMotion = useReducedMotion();
     return (
         <motion.div
             key={id}
-            initial={{ scale: 0, opacity: 0, x: '-50%', y: '-50%' }}
+            initial={shouldReduceMotion ? { scale: 1, opacity: 0, x: '-50%', y: '-50%' } : { scale: 0, opacity: 0, x: '-50%', y: '-50%' }}
             animate={{ scale: 1, opacity: 1, x: '-50%', y: '-50%' }}
-            transition={{ type: "spring", stiffness: 200, damping: 20, delay }}
+            transition={shouldReduceMotion ? { duration: 0.3 } : { type: "spring", stiffness: 200, damping: 20, delay }}
             style={{
                 position: 'absolute',
                 left: x,
@@ -210,7 +213,8 @@ function GraphNode({ id, label, x, y, icon, delay, size = 60, glow = 'rgba(255,2
                 alignItems: 'center',
                 justifyContent: 'center',
                 zIndex: 10,
-                boxShadow: pulsing ? `0 0 30px ${icon.props.color}80` : `0 0 20px ${glow}`
+                boxShadow: pulsing && !shouldReduceMotion ? `0 0 30px ${icon.props.color}80` : `0 0 20px ${glow}`,
+                willChange: 'transform, opacity'
             }}
         >
             {icon}
@@ -221,7 +225,7 @@ function GraphNode({ id, label, x, y, icon, delay, size = 60, glow = 'rgba(255,2
             </div>
 
             {/* Pulsing ring */}
-            {pulsing && (
+            {pulsing && !shouldReduceMotion && (
                 <motion.div
                     animate={{ scale: [1, 1.5], opacity: [0.8, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}

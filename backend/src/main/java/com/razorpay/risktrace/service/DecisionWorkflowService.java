@@ -70,7 +70,8 @@ public class DecisionWorkflowService {
             ));
             auditService.logEvent(dispute, "MERCHANT_DECISION", "Merchant", detailsJson);
         } catch (Exception e) {
-            auditService.logEvent(dispute, "MERCHANT_DECISION", "Merchant", "Decision: " + request.decision().name());
+            String fallbackMessage = "Decision: " + request.decision().name() + " (Failed to serialize full assessment details)";
+            auditService.logEvent(dispute, "MERCHANT_DECISION", "Merchant", fallbackMessage);
         }
     }
 }

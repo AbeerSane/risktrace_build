@@ -25,17 +25,19 @@ export default function Dashboard() {
 
     if (loading) {
         return (
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', color: '#a55eea' }}>
-                <h2 style={{ letterSpacing: '4px', textTransform: 'uppercase' }}>Initializing Command Center...</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100%', gap: '1.5rem' }}>
+                <div className="cyber-loader"></div>
+                <h2 style={{ letterSpacing: '4px', textTransform: 'uppercase', color: '#a55eea', fontSize: '1.2rem', margin: 0 }}>Initializing Command Center...</h2>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div style={{ color: '#ff4757', padding: '2rem', border: '1px solid rgba(255, 71, 87, 0.2)', backgroundColor: 'rgba(255, 71, 87, 0.05)' }}>
-                <h3>System Failure</h3>
-                <p>{error}</p>
+            <div className="glass-panel" style={{ color: '#ff4757', padding: '2rem', border: '1px solid rgba(255, 71, 87, 0.4)', backgroundColor: 'rgba(255, 71, 87, 0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem' }}>
+                <AlertTriangle size={48} />
+                <h3 style={{ margin: 0, letterSpacing: '2px', textTransform: 'uppercase' }}>System Failure</h3>
+                <p style={{ fontFamily: 'monospace', margin: 0, opacity: 0.8 }}>{error}</p>
             </div>
         );
     }
@@ -114,7 +116,7 @@ export default function Dashboard() {
             {/* Recent Disputes Table */}
             <div>
                 <h3 style={{ color: '#f1f2f6', fontWeight: 400, letterSpacing: '1px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '0.5rem', marginBottom: '1rem' }}>Recent Activity</h3>
-                <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+                <div className="glass-panel" style={{ overflow: 'hidden' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ backgroundColor: 'rgba(0,0,0,0.2)', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '1px', color: '#747d8c' }}>
                             <tr>
@@ -139,7 +141,17 @@ export default function Dashboard() {
                             ))}
                             {(!metrics.recentDisputes || metrics.recentDisputes.length === 0) && (
                                 <tr>
-                                    <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: '#747d8c' }}>No recent disputes found.</td>
+                                    <td colSpan="4" style={{ padding: '4rem 2rem', textAlign: 'center', color: '#747d8c' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '50%' }}>
+                                                <AlertTriangle size={32} opacity={0.5} />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '1.1rem', color: '#f1f2f6', marginBottom: '0.5rem' }}>No Active Telemetry</div>
+                                                <div style={{ fontSize: '0.9rem' }}>The system has not detected any recent dispute activity.</div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             )}
                         </tbody>

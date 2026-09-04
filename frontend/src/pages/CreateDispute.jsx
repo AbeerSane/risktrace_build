@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createDisputeCase } from "../api/api";
-import { ArrowLeft, Send, ShieldAlert, Package, CreditCard, User } from "lucide-react";
+import { ArrowLeft, Send, ShieldAlert, Package, CreditCard, User, Loader2 } from "lucide-react";
 
 export default function CreateDispute() {
     const navigate = useNavigate();
@@ -61,7 +61,7 @@ export default function CreateDispute() {
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
                 
-                <div style={sectionStyle}>
+                <div className="glass-panel" style={sectionStyle}>
                     <h3 style={headerStyle}><User size={18}/> Customer Profile</h3>
                     <div style={gridStyle}>
                         <Input label="Name" name="customerName" value={formData.customerName} onChange={handleChange} required />
@@ -70,7 +70,7 @@ export default function CreateDispute() {
                     </div>
                 </div>
 
-                <div style={sectionStyle}>
+                <div className="glass-panel" style={sectionStyle}>
                     <h3 style={headerStyle}><CreditCard size={18}/> Transaction & Dispute</h3>
                     <div style={gridStyle}>
                         <Input label="Amount" name="orderAmount" type="number" step="0.01" value={formData.orderAmount} onChange={handleChange} required />
@@ -93,7 +93,7 @@ export default function CreateDispute() {
                     </div>
                 </div>
 
-                <div style={sectionStyle}>
+                <div className="glass-panel" style={sectionStyle}>
                     <h3 style={headerStyle}><Package size={18}/> Fulfillment Details</h3>
                     <div style={gridStyle}>
                         <Input label="Tracking Number" name="shipmentTracking" value={formData.shipmentTracking} onChange={handleChange} />
@@ -119,7 +119,7 @@ export default function CreateDispute() {
                         alignSelf: 'flex-start', marginTop: '1rem', opacity: submitting ? 0.7 : 1
                     }}
                 >
-                    {submitting ? 'Injecting Data...' : <><Send size={20} /> Inject Case Data</>}
+                    {submitting ? <><Loader2 size={20} className="spin" style={{ animation: 'rotate 2s linear infinite' }} /> Injecting Data...</> : <><Send size={20} /> Inject Case Data</>}
                 </button>
 
             </form>
@@ -128,7 +128,7 @@ export default function CreateDispute() {
 }
 
 const sectionStyle = {
-    background: 'rgba(20, 18, 25, 0.8)', padding: '2rem', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)'
+    padding: '2rem'
 };
 
 const headerStyle = {
@@ -145,12 +145,7 @@ function Input({ label, ...props }) {
             <label style={{ fontSize: '0.85rem', color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
             <input 
                 {...props} 
-                style={{ 
-                    background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', 
-                    padding: '0.8rem', color: '#f1f2f6', fontSize: '1rem', outline: 'none'
-                }} 
-                onFocus={(e) => e.target.style.borderColor = '#a55eea'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                className="premium-input"
             />
         </div>
     );
@@ -162,12 +157,7 @@ function Select({ label, options, ...props }) {
             <label style={{ fontSize: '0.85rem', color: '#747d8c', textTransform: 'uppercase', letterSpacing: '1px' }}>{label}</label>
             <select 
                 {...props} 
-                style={{ 
-                    background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', 
-                    padding: '0.8rem', color: '#f1f2f6', fontSize: '1rem', outline: 'none'
-                }}
-                onFocus={(e) => e.target.style.borderColor = '#a55eea'}
-                onBlur={(e) => e.target.style.borderColor = 'rgba(255,255,255,0.1)'}
+                className="premium-input"
             >
                 {options.map(opt => <option key={opt} value={opt} style={{ background: '#1a1a24' }}>{opt}</option>)}
             </select>

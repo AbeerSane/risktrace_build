@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/patterns")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${risktrace.cors.allowed-origins:http://localhost:5173}")
 public class PatternController {
 
     private final PatternDetectionService patternDetectionService;

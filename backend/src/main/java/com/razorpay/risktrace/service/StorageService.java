@@ -29,7 +29,13 @@ public class StorageService {
         
         try {
             String originalFilename = file.getOriginalFilename();
-            String extension = originalFilename != null && originalFilename.contains(".") ? originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
+            String extension = originalFilename != null && originalFilename.contains(".") 
+                ? originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase() : "";
+            
+            if (!extension.equals(".png") && !extension.equals(".jpg") && !extension.equals(".jpeg") && !extension.equals(".pdf")) {
+                throw new SecurityException("Invalid file extension.");
+            }
+            
             String newFilename = UUID.randomUUID().toString() + extension;
             
             Path destinationFile = Paths.get(uploadDir).resolve(Paths.get(newFilename)).normalize().toAbsolutePath();

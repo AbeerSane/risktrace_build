@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { fetchAudits, submitDecision } from "../api/api";
 import { CheckCircle, AlertTriangle, XCircle, ShieldAlert, FileText, ChevronRight, Zap, Loader2, ShieldCheck, Activity } from "lucide-react";
 import EvidenceUploadButton from "./EvidenceUploadButton";
@@ -386,6 +386,7 @@ const btnStyle = (color) => ({
 
 function ReasoningSentence({ text, index, isSupporting, isMissing, isConflict }) {
     const [active, setActive] = useState(false);
+    const shouldReduceMotion = useReducedMotion();
 
     useEffect(() => {
         const appearDelay = index * 1200;
@@ -405,14 +406,15 @@ function ReasoningSentence({ text, index, isSupporting, isMissing, isConflict })
 
     return (
         <motion.span
-            initial={{ opacity: 0, filter: 'blur(10px)', y: 10 }}
-            animate={{ opacity: active ? 1 : 0, filter: active ? 'blur(0px)' : 'blur(10px)', y: active ? 0 : 10 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
+            initial={{ opacity: 0, filter: shouldReduceMotion ? 'none' : 'blur(10px)', y: shouldReduceMotion ? 0 : 10 }}
+            animate={{ opacity: active ? 1 : 0, filter: shouldReduceMotion ? 'none' : (active ? 'blur(0px)' : 'blur(10px)'), y: shouldReduceMotion ? 0 : (active ? 0 : 10) }}
+            transition={shouldReduceMotion ? { duration: 0.2 } : { duration: 0.8, ease: "easeOut" }}
             style={{ 
                 color: active ? '#fff' : 'rgba(255,255,255,0)',
-                textShadow: active ? '0 0 10px rgba(255,255,255,0.3)' : 'none',
+                textShadow: active && !shouldReduceMotion ? '0 0 10px rgba(255,255,255,0.3)' : 'none',
                 display: 'inline',
-                marginRight: '0.4rem'
+                marginRight: '0.4rem',
+                willChange: 'opacity, transform, filter'
             }}
         >
             {text}

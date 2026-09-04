@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/investigations")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${risktrace.cors.allowed-origins:http://localhost:5173}")
 public class InvestigationController {
 
     private final InvestigationLifecycleService lifecycleService;

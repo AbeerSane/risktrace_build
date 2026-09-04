@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { fetchDisputeDetails, startInvestigation, pollInvestigation } from "../api/api";
 import InvestigationSequence from "../components/InvestigationSequence";
 import FinalWorkspace from "../components/FinalWorkspace";
-import { PlayCircle, ArrowLeft } from "lucide-react";
+import { PlayCircle, ArrowLeft, AlertTriangle } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function DisputeDetail() {
@@ -65,8 +65,19 @@ export default function DisputeDetail() {
         }
     };
 
-    if (loading) return <div style={{ padding: '2rem', color: '#a55eea' }}>Fetching Dispute Telemetry...</div>;
-    if (error) return <div style={{ padding: '2rem', color: '#ff4757' }}>Error: {error}</div>;
+    if (loading) return (
+        <div style={{ padding: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', height: '100vh', justifyContent: 'center' }}>
+            <div className="cyber-loader"></div>
+            <div style={{ color: '#a55eea', letterSpacing: '2px', textTransform: 'uppercase' }}>Fetching Dispute Telemetry...</div>
+        </div>
+    );
+    if (error) return (
+        <div className="glass-panel" style={{ color: '#ff4757', padding: '2rem', border: '1px solid rgba(255, 71, 87, 0.4)', backgroundColor: 'rgba(255, 71, 87, 0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '1rem', maxWidth: '600px', margin: '4rem auto' }}>
+            <AlertTriangle size={48} />
+            <h3 style={{ margin: 0, letterSpacing: '2px', textTransform: 'uppercase' }}>System Failure</h3>
+            <p style={{ fontFamily: 'monospace', margin: 0, opacity: 0.8 }}>{error}</p>
+        </div>
+    );
 
     if (viewState === 'ANIMATING') {
         return (
@@ -122,7 +133,7 @@ export default function DisputeDetail() {
             <h1 style={{ fontSize: '2rem', fontWeight: 300, marginBottom: '0.5rem' }}>Dispute <span style={{ color: '#a55eea', fontFamily: 'monospace' }}>{dispute.id.substring(0,8)}</span></h1>
             <div style={{ color: '#ccc', marginBottom: '3rem', fontSize: '1.2rem' }}>{dispute.reason} — {formatter.format(dispute.amount)}</div>
 
-            <div style={{ background: 'rgba(20, 18, 25, 0.6)', border: '1px solid rgba(170, 59, 255, 0.3)', borderRadius: '12px', padding: '3rem', textAlign: 'center', boxShadow: '0 10px 40px rgba(170, 59, 255, 0.1)' }}>
+            <div className="glass-panel" style={{ padding: '4rem 3rem', textAlign: 'center' }}>
                 <CpuIcon />
                 <h2 style={{ fontWeight: 300, marginBottom: '1rem' }}>AI Investigation Engine Ready</h2>
                 <p style={{ color: '#747d8c', marginBottom: '2rem', maxWidth: '400px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>

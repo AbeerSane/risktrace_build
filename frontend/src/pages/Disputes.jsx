@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchDisputes } from "../api/api";
+import { AlertTriangle, Search } from "lucide-react";
 
 export default function Disputes() {
     const navigate = useNavigate();
@@ -46,7 +47,13 @@ export default function Disputes() {
 
     const formatter = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' });
 
-    if (error) return <div style={{ color: '#ff4757', padding: '2rem' }}><h3>System Failure</h3><p>{error}</p></div>;
+    if (error) return (
+        <div className="glass-panel" style={{ color: '#ff4757', padding: '2rem', border: '1px solid rgba(255, 71, 87, 0.4)', backgroundColor: 'rgba(255, 71, 87, 0.05)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: '1rem', marginTop: '2rem' }}>
+            <AlertTriangle size={48} />
+            <h3 style={{ margin: 0, letterSpacing: '2px', textTransform: 'uppercase' }}>System Failure</h3>
+            <p style={{ fontFamily: 'monospace', margin: 0, opacity: 0.8 }}>{error}</p>
+        </div>
+    );
 
     return (
         <div style={{ fontFamily: 'system-ui, sans-serif' }}>
@@ -76,47 +83,40 @@ export default function Disputes() {
                     placeholder="Search by ID, Merchant, Reason..." 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    style={{ 
-                        flex: 1, minWidth: '250px', padding: '10px 15px', borderRadius: '6px', 
-                        border: '1px solid rgba(170, 59, 255, 0.3)', background: 'rgba(20, 18, 25, 0.8)', 
-                        color: '#f1f2f6', outline: 'none' 
-                    }}
+                    className="premium-input"
+                    style={{ flex: 1, minWidth: '250px' }}
                 />
                 
                 <select 
                     value={statusFilter} 
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    style={{ 
-                        padding: '10px 15px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', 
-                        background: 'rgba(20, 18, 25, 0.8)', color: '#f1f2f6', outline: 'none', cursor: 'pointer' 
-                    }}
+                    className="premium-input"
+                    style={{ cursor: 'pointer' }}
                 >
-                    <option value="">All Statuses</option>
-                    <option value="NEW">New</option>
-                    <option value="INVESTIGATING">Investigating</option>
-                    <option value="REQUIRES_ACTION">Requires Action</option>
-                    <option value="WON">Won</option>
-                    <option value="LOST">Lost</option>
+                    <option value="" style={{ background: '#1a1a24' }}>All Statuses</option>
+                    <option value="NEW" style={{ background: '#1a1a24' }}>New</option>
+                    <option value="INVESTIGATING" style={{ background: '#1a1a24' }}>Investigating</option>
+                    <option value="REQUIRES_ACTION" style={{ background: '#1a1a24' }}>Requires Action</option>
+                    <option value="WON" style={{ background: '#1a1a24' }}>Won</option>
+                    <option value="LOST" style={{ background: '#1a1a24' }}>Lost</option>
                 </select>
 
                 <select 
                     value={priorityFilter} 
                     onChange={(e) => setPriorityFilter(e.target.value)}
-                    style={{ 
-                        padding: '10px 15px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', 
-                        background: 'rgba(20, 18, 25, 0.8)', color: '#f1f2f6', outline: 'none', cursor: 'pointer' 
-                    }}
+                    className="premium-input"
+                    style={{ cursor: 'pointer' }}
                 >
-                    <option value="">All Priorities</option>
-                    <option value="LOW">Low</option>
-                    <option value="MEDIUM">Medium</option>
-                    <option value="HIGH">High</option>
+                    <option value="" style={{ background: '#1a1a24' }}>All Priorities</option>
+                    <option value="LOW" style={{ background: '#1a1a24' }}>Low</option>
+                    <option value="MEDIUM" style={{ background: '#1a1a24' }}>Medium</option>
+                    <option value="HIGH" style={{ background: '#1a1a24' }}>High</option>
                 </select>
             </div>
 
             {/* Data Table */}
-            <div style={{ background: 'rgba(20, 18, 25, 0.6)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.05)', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-                {loading && <div style={{ padding: '2rem', textAlign: 'center', color: '#a55eea' }}>Syncing telemetry...</div>}
+            <div className="glass-panel" style={{ overflow: 'hidden' }}>
+                {loading && <div style={{ padding: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}><div className="cyber-loader"></div><div style={{ color: '#a55eea', letterSpacing: '2px', textTransform: 'uppercase' }}>Syncing telemetry...</div></div>}
                 {!loading && (
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
                         <thead style={{ backgroundColor: 'rgba(0,0,0,0.4)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '1.5px', color: '#747d8c' }}>
@@ -197,7 +197,17 @@ export default function Disputes() {
                             })}
                             {filteredDisputes.length === 0 && (
                                 <tr>
-                                    <td colSpan="8" style={{ padding: '3rem', textAlign: 'center', color: '#747d8c' }}>No matching disputes found.</td>
+                                    <td colSpan="8" style={{ padding: '4rem 2rem', textAlign: 'center', color: '#747d8c' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{ padding: '1rem', background: 'rgba(255,255,255,0.02)', borderRadius: '50%' }}>
+                                                <Search size={32} opacity={0.5} />
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: '1.1rem', color: '#f1f2f6', marginBottom: '0.5rem' }}>No Matches Found</div>
+                                                <div style={{ fontSize: '0.9rem' }}>Adjust your filters or search query to locate telemetry data.</div>
+                                            </div>
+                                        </div>
+                                    </td>
                                 </tr>
                             )}
                         </tbody>

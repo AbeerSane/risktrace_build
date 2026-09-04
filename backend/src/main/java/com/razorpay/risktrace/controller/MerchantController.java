@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/merchants")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${risktrace.cors.allowed-origins:http://localhost:5173}")
 public class MerchantController {
 
     private final MerchantService merchantService;

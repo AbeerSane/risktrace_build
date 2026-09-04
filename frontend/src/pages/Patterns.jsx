@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { fetchPatterns } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { AlertTriangle, TrendingUp, Network, Scan, ChevronRight, X, ShieldAlert, Crosshair } from "lucide-react";
 
 export default function Patterns() {
@@ -11,6 +11,7 @@ export default function Patterns() {
     const [selectedPattern, setSelectedPattern] = useState(null);
     const [explanationStage, setExplanationStage] = useState(0);
     const navigate = useNavigate();
+    const shouldReduceMotion = useReducedMotion();
 
     // 0 = SCANNING, 1 = CLUSTERING, 2 = ASSESSMENT, 3 = ROOT CAUSE
 
@@ -123,7 +124,7 @@ export default function Patterns() {
                         x2={`${n.cx}%`} y2={`${n.cy}%`}
                         stroke={n.patternId.includes("FRAUD") ? "rgba(231, 76, 60, 0.4)" : "rgba(243, 156, 18, 0.4)"}
                         strokeWidth="1"
-                        initial={{ pathLength: 0, opacity: 0 }}
+                        initial={shouldReduceMotion ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
                         animate={{ pathLength: 1, opacity: 1 }}
                         transition={{ duration: 1.5, ease: "easeInOut" }}
                     />
@@ -194,18 +195,19 @@ export default function Patterns() {
             {nodes.map(n => (
                 <motion.div
                     key={n.id}
-                    initial={{ top: `${n.sx}%`, left: `${n.sx}%`, opacity: 0 }}
+                    initial={shouldReduceMotion ? { top: `${n.cy}%`, left: `${n.cx}%`, opacity: 0 } : { top: `${n.sx}%`, left: `${n.sx}%`, opacity: 0 }}
                     animate={{ 
-                        top: stage >= 1 ? `${n.cy}%` : `${n.sy}%`, 
-                        left: stage >= 1 ? `${n.cx}%` : `${n.sx}%`,
+                        top: (stage >= 1 || shouldReduceMotion) ? `${n.cy}%` : `${n.sy}%`, 
+                        left: (stage >= 1 || shouldReduceMotion) ? `${n.cx}%` : `${n.sx}%`,
                         opacity: 1,
                         scale: selectedPattern ? (selectedPattern.id === n.patternId ? 1.2 : 0.2) : 1
                     }}
-                    transition={{ type: "spring", stiffness: 50, damping: 15 }}
+                    transition={shouldReduceMotion ? { duration: 0.5 } : { type: "spring", stiffness: 50, damping: 15 }}
                     style={{
                         position: 'absolute', width: '8px', height: '8px', borderRadius: '50%',
                         background: '#f1f2f6', transform: 'translate(-50%, -50%)', zIndex: 2,
-                        boxShadow: '0 0 10px rgba(255,255,255,0.5)'
+                        boxShadow: '0 0 10px rgba(255,255,255,0.5)',
+                        willChange: 'transform'
                     }}
                 />
             ))}
@@ -281,12 +283,7 @@ export default function Patterns() {
                                     <button 
                                         key={id}
                                         onClick={() => navigate(`/disputes/${id}`)}
-                                        style={{ 
-                                            background: 'rgba(52, 152, 219, 0.1)', color: '#3498db', border: '1px solid transparent', padding: '0.8rem', borderRadius: '6px',
-                                            display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer', transition: 'all 0.2s'
-                                        }}
-                                        onMouseOver={(e) => e.currentTarget.style.borderColor = '#3498db'}
-                                        onMouseOut={(e) => e.currentTarget.style.borderColor = 'transparent'}
+                                        className="dispute-list-item"
                                     >
                                         <span style={{ fontFamily: 'monospace' }}>{id.substring(0, 8)}...</span>
                                         <ChevronRight size={16} />

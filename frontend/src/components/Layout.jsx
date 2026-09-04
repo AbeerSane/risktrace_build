@@ -1,6 +1,6 @@
 import { Outlet, Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { LayoutDashboard, AlertTriangle, Network } from "lucide-react";
+import { LayoutDashboard, AlertTriangle, Network, LogOut } from "lucide-react";
 
 export default function Layout() {
     const { logout } = useAuth();
@@ -40,7 +40,19 @@ export default function Layout() {
                     })}>
                         <Network size={20} /> Pattern Intel
                     </NavLink>
-                    <button onClick={handleLogout} style={{ marginTop: "auto", background: "none", border: "none", color: "#747d8c", cursor: "pointer", padding: "1rem", textAlign: "left", fontSize: "16px" }}>Logout</button>
+                    <button 
+                        onClick={handleLogout} 
+                        style={{ 
+                            marginTop: "auto", background: "transparent", border: "none", color: "#747d8c", 
+                            cursor: "pointer", padding: "1rem", textAlign: "left", fontSize: "1rem",
+                            display: 'flex', alignItems: 'center', gap: '0.8rem', borderRadius: '8px',
+                            transition: 'all 0.2s', fontFamily: 'inherit'
+                        }}
+                        onMouseOver={e => { e.currentTarget.style.color = '#fff'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)'; }}
+                        onMouseOut={e => { e.currentTarget.style.color = '#747d8c'; e.currentTarget.style.background = 'transparent'; }}
+                    >
+                        <LogOut size={20} /> Logout
+                    </button>
                 </div>
             </nav>
             <main style={{ flex: 1, padding: "2rem", overflowY: "auto", backgroundColor: "#0f0f12", color: "#eee" }}>

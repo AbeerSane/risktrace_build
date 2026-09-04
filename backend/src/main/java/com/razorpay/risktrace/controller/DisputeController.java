@@ -14,12 +14,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/disputes")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "${risktrace.cors.allowed-origins:http://localhost:5173}")
 public class DisputeController {
 
     private final DisputeService disputeService;
@@ -92,7 +93,7 @@ public class DisputeController {
     }
 
     @PostMapping("/intake")
-    public ResponseEntity<DisputeSummaryDTO> intakeDispute(@RequestBody com.razorpay.risktrace.dto.DisputeIntakeDTO intakeRequest) {
+    public ResponseEntity<DisputeSummaryDTO> intakeDispute(@Valid @RequestBody com.razorpay.risktrace.dto.DisputeIntakeDTO intakeRequest) {
         com.razorpay.risktrace.entity.Dispute dispute = disputeIntakeService.processIntake(intakeRequest);
         return ResponseEntity.ok(new DisputeSummaryDTO(
             dispute.getId(), dispute.getMerchant().getName(),

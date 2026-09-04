@@ -79,7 +79,7 @@ public class AiInvestigationService {
 
     public AIRecommendationDTO investigate(UUID disputeId) {
         if (apiKey == null || apiKey.trim().isEmpty()) {
-            throw new IllegalStateException("AI API Key is not configured. Please set risktrace.ai.api-key in application.properties");
+            throw new RuntimeException("AI API Key is not configured. Please set risktrace.ai.api-key in application.properties");
         }
 
         try {
