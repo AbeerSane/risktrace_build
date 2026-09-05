@@ -86,7 +86,7 @@ public class AiInvestigationService {
 
         if (apiKey == null || apiKey.trim().isEmpty() || apiKey.contains("placeholder") || apiKey.contains("your_api_key")) {
             logger.info("AI API key not configured. Using deterministic assessment engine for Dispute {}.", disputeId);
-            return buildDeterministicRecommendation(disputeId, assessment);
+            return buildDeterministicRecommendation(disputeId, assessment, investigation);
         }
 
         try {
@@ -117,7 +117,7 @@ public class AiInvestigationService {
 
             if (response.statusCode() != 200) {
                 logger.warn("AI Provider returned status {}. Falling back to deterministic analysis.", response.statusCode());
-                return buildDeterministicRecommendation(disputeId, assessment);
+                return buildDeterministicRecommendation(disputeId, assessment, investigation);
             }
 
             // 4. Parse Response
@@ -136,19 +136,46 @@ public class AiInvestigationService {
 
         } catch (Exception e) {
             logger.warn("AI investigation via remote provider failed ({}), falling back to deterministic risk engine.", e.getMessage());
-            return buildDeterministicRecommendation(disputeId, assessment);
+            return buildDeterministicRecommendation(disputeId, assessment, investigation);
         }
     }
 
-    private AIRecommendationDTO buildDeterministicRecommendation(UUID disputeId, com.razorpay.risktrace.dto.CaseAssessmentDTO assessment) {
-        String rec = assessment.recommendedAction();
-        int conf = assessment.caseStrength();
-        String reasoning = "Deterministic risk assessment calculated from verified transaction telemetry, 3DS authentication state, and correlated carrier proof of fulfillment.";
-        List<String> supporting = assessment.factors().stream().filter(f -> !f.toLowerCase().contains("risk") && !f.toLowerCase().contains("missing")).toList();
-        List<String> missing = List.of("Signed physical delivery receipt", "Direct buyer dispute resolution chat transcript");
-        List<String> contradictions = List.of();
-        List<String> risks = assessment.factors().stream().filter(f -> f.toLowerCase().contains("risk") || f.toLowerCase().contains("low")).toList();
-        String nextStep = "CONTEST_DISPUTE".equals(rec) ? "Compile and submit evidence dossier to card network" : "Accept chargeback to prevent dispute processing penalties";
+    private AIRecommendationDTO buildDeterministicRecommendation(UUID disputeId, com.razorpay.risktrace.dto.CaseAssessmentDTO assessment, com.razorpay.risktrace.dto.InvestigationResultDTO investigation) {
+        int conf = assessment.caseStrength() != null ? assessment.caseStrength() : 50;
+        String rec = conf >= 50 ? "CONTEST_DISPUTE" : "ACCEPT_DISPUTE";
+        String reasoning = assessment.explanation() != null ? assessment.explanation() : "Deterministic risk assessment based on correlated evidence and telemetry.";
+        
+        List<String> supporting;
+        if (investigation.supportingEvidence() != null && !investigation.supportingEvidence().isEmpty()) {
+            supporting = investigation.supportingEvidence().stream()
+                .map(e -> e.type() + ": " + (e.content() != null ? e.content() : "Verified"))
+                .toList();
+        } else {
+            supporting = List.of("Verified payment telemetry");
+        }
+            
+        List<String> missing;
+        if (investigation.missingEvidence() != null && !investigation.missingEvidence().isEmpty()) {
+            missing = investigation.missingEvidence().stream()
+                .map(Enum::name)
+                .toList();
+        } else {
+            missing = List.of("CUSTOMER_COMMUNICATION");
+        }
+            
+        List<String> contradictions;
+        if (investigation.contradictoryEvidence() != null && !investigation.contradictoryEvidence().isEmpty()) {
+            contradictions = investigation.contradictoryEvidence().stream()
+                .map(e -> e.type() + ": " + (e.content() != null ? e.content() : "Contradiction detected"))
+                .toList();
+        } else {
+            contradictions = List.of();
+        }
+            
+        List<String> risks = conf < 50 ? List.of("Low evidence completeness", "High fraud probability") : List.of();
+        String nextStep = "CONTEST_DISPUTE".equals(rec) 
+            ? "Compile and submit verified evidence package to card network" 
+            : "Accept chargeback to mitigate dispute processing fees";
 
         disputeRepository.findById(disputeId).ifPresent(dispute -> {
             auditService.logEvent(dispute, "AI_RECOMMENDATION", "Risk Intelligence Engine", "Heuristic analysis completed recommendation: " + nextStep);
@@ -158,7 +185,7 @@ public class AiInvestigationService {
             rec,
             conf,
             reasoning,
-            supporting.isEmpty() ? List.of("Verified payment authorization", "Carrier delivery telemetry") : supporting,
+            supporting.isEmpty() ? List.of("Verified transaction record") : supporting,
             missing,
             contradictions,
             risks,
