@@ -4,6 +4,17 @@
 
 ---
 
+## 💡 What is RiskTrace?
+
+**RiskTrace** is an autonomous dispute intelligence and chargeback defense platform designed for online merchants on Razorpay. When a cardholder files a dispute—claiming *"unrecognized transaction"* or *"merchandise not received"*—merchants face tight banking deadlines and a manual, chaotic struggle to collect fragmented proof across payment gateways, order databases, and courier tracking logs.
+
+RiskTrace transforms this process into an automated, high-precision defense system:
+- **Cross-Node Evidence Correlation:** Automatically pulls and verifies transaction telemetry—including 3D Secure (3DS) authentication status, CVV verification, cardholder IP geolocation, and carrier proof of delivery (e.g., FedEx tracking timestamps).
+- **AI Case Reasoning & Win Probability:** An AI reasoning engine evaluates the assembled case facts against card network dispute guidelines, identifies contradictory claims, calculates an empirical **Win Probability / Case Strength Score (0–100%)**, and recommends clear merchant action (`CONTEST_DISPUTE` vs `ACCEPT_DISPUTE`).
+- **One-Click Defense & Pattern Intelligence:** Generates complete, compliant evidence dossiers for instant submission to acquiring banks, while detecting systemic fraud patterns such as BIN attacks, repeat friendly-fraud offenders, and velocity spikes.
+
+---
+
 ## 🏗️ Architecture & Tech Stack
 
 - **Backend**: Spring Boot 3.2.3 (Java 17+), Spring Data JPA, Hibernate ORM
