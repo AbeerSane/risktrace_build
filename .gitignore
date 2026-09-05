@@ -29,7 +29,7 @@ frontend/*.local
 !.env.example
 
 # Private Configuration
-backend/src/main/resources/application.properties
+backend/uploads/
 backend/test_groq.py
 
 # Agent and IDE skills
