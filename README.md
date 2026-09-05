@@ -29,22 +29,20 @@ To run this project locally or inside an evaluation sandbox / AI agent environme
 
 ## 🚀 Quick Start (Zero to Running in 3 Steps)
 
-### Step 1: Start the PostgreSQL Database
+### Step 1: Ensure PostgreSQL Database is Running
 
-Using Docker (fastest, zero manual configuration):
-```bash
-docker compose up -d
-```
-*(This starts a dedicated PostgreSQL instance on port `5432` with database `risktrace` pre-configured).*
+You can choose either of two options:
 
-> **If using an existing local PostgreSQL instead of Docker:**
-> Ensure a database named `risktrace` exists on port `5432`. You can set environment variables if your local password differs:
-> ```bash
-> # Optional custom connection
-> export SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/risktrace?sslmode=disable
-> export SPRING_DATASOURCE_USERNAME=postgres
-> export SPRING_DATASOURCE_PASSWORD=your_password
-> ```
+- **Option A (Native PostgreSQL - Recommended if already installed):**
+  If you already have PostgreSQL running on your machine (default port `5432`), just ensure a database named `risktrace` exists. You can proceed directly to Step 2!
+  *(To override default password or username, set `SPRING_DATASOURCE_PASSWORD` environment variable).*
+
+- **Option B (Docker Compose - Zero manual database setup):**
+  Ensure **Docker Desktop** is open and running, then execute:
+  ```bash
+  docker compose up -d
+  ```
+  *(This launches an isolated PostgreSQL container with the `risktrace` database pre-configured on port `5432`).*
 
 ---
 
