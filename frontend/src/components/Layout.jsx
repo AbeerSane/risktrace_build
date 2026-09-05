@@ -20,6 +20,9 @@ export default function Layout() {
         return "Dispute Command Center";
     };
 
+    const isDisputesActive = location.pathname === "/disputes" || (location.pathname.startsWith("/disputes/") && location.pathname !== "/disputes/new");
+    const isIngestActive = location.pathname === "/disputes/new";
+
     return (
         <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "var(--bg-base)", color: "var(--text-primary)", fontFamily: "var(--font-sans)" }}>
             {/* Minimalist Elevated Sidebar */}
@@ -63,6 +66,7 @@ export default function Layout() {
 
                     <NavLink 
                         to="/dashboard" 
+                        end
                         style={({ isActive }) => ({
                             display: "flex",
                             alignItems: "center",
@@ -83,17 +87,18 @@ export default function Layout() {
 
                     <NavLink 
                         to="/disputes" 
-                        style={({ isActive }) => ({
+                        end
+                        style={() => ({
                             display: "flex",
                             alignItems: "center",
                             gap: "0.75rem",
                             padding: "0.75rem 1rem",
                             borderRadius: "var(--radius-md)",
                             fontSize: "0.88rem",
-                            fontWeight: isActive ? 600 : 500,
-                            color: isActive ? "#F8FAFC" : "#94A3B8",
-                            backgroundColor: isActive ? "rgba(139, 92, 246, 0.12)" : "transparent",
-                            border: isActive ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid transparent",
+                            fontWeight: isDisputesActive ? 600 : 500,
+                            color: isDisputesActive ? "#F8FAFC" : "#94A3B8",
+                            backgroundColor: isDisputesActive ? "rgba(139, 92, 246, 0.12)" : "transparent",
+                            border: isDisputesActive ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid transparent",
                             transition: "all 0.18s ease"
                         })}
                     >
@@ -103,6 +108,7 @@ export default function Layout() {
 
                     <NavLink 
                         to="/patterns" 
+                        end
                         style={({ isActive }) => ({
                             display: "flex",
                             alignItems: "center",
@@ -123,17 +129,18 @@ export default function Layout() {
 
                     <NavLink 
                         to="/disputes/new" 
-                        style={({ isActive }) => ({
+                        end
+                        style={() => ({
                             display: "flex",
                             alignItems: "center",
                             gap: "0.75rem",
                             padding: "0.75rem 1rem",
                             borderRadius: "var(--radius-md)",
                             fontSize: "0.88rem",
-                            fontWeight: isActive ? 600 : 500,
-                            color: isActive ? "#F8FAFC" : "#94A3B8",
-                            backgroundColor: isActive ? "rgba(139, 92, 246, 0.12)" : "transparent",
-                            border: isActive ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid transparent",
+                            fontWeight: isIngestActive ? 600 : 500,
+                            color: isIngestActive ? "#F8FAFC" : "#94A3B8",
+                            backgroundColor: isIngestActive ? "rgba(139, 92, 246, 0.12)" : "transparent",
+                            border: isIngestActive ? "1px solid rgba(139, 92, 246, 0.3)" : "1px solid transparent",
                             transition: "all 0.18s ease"
                         })}
                     >
